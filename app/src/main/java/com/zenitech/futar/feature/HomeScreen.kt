@@ -1,23 +1,36 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
 package com.zenitech.futar.feature
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.EaseInBounce
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -28,29 +41,38 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.automirrored.filled.VolumeDown
 import androidx.compose.material.icons.automirrored.filled.VolumeMute
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
+import androidx.compose.material.icons.filled.Circle
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.DirectionsBus
 import androidx.compose.material.icons.filled.GpsFixed
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.PriorityHigh
 import androidx.compose.material.icons.filled.SevereCold
 import androidx.compose.material.icons.filled.SignalCellularAlt
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -61,8 +83,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.DarkGray
+import androidx.compose.ui.graphics.Color.Companion.Gray
+import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -73,16 +99,22 @@ import com.zenitech.futar.ui.theme.AlertBackgroundRed
 import com.zenitech.futar.ui.theme.AlertRed
 import com.zenitech.futar.ui.theme.BusBlue
 import com.zenitech.futar.ui.theme.BusDarkBlue
+import com.zenitech.futar.ui.theme.DarkTicketYellow
 import com.zenitech.futar.ui.theme.FutarTheme
 import com.zenitech.futar.ui.theme.Green
+import com.zenitech.futar.ui.theme.LightGrey
 import com.zenitech.futar.ui.theme.LightPurple
 import com.zenitech.futar.ui.theme.MediumPurple
 import com.zenitech.futar.ui.theme.Purple
+import com.zenitech.futar.ui.theme.TicketYellow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun SatelliteStatusIcon(isActive: Boolean) {
@@ -117,48 +149,76 @@ fun DataConnectionStatusIcon(isActive: Boolean) {
 }
 
 @Composable
-fun StatusDisplay() {
+fun StatusDisplay(
+    modifier: Modifier,
+    lastSelectedButton: HomeButton,
+    onLastSelectedButtonClicked: () -> Unit
+) {
     val showConnectionData = remember {
         mutableStateOf(false)
     }
 
-    Row(
-        modifier = Modifier
-            .clip(RoundedCornerShape(20.dp, 0.dp, 0.dp, 0.dp))
-            .clickable {
-                showConnectionData.value = showConnectionData.value.not()
-            }
-            .background(Purple, RoundedCornerShape(20.dp, 0.dp, 0.dp, 0.dp))
-            .padding(horizontal = 20.dp, vertical = 10.dp),
+    Box(
+        modifier
+            .fillMaxWidth()
+            .border(1.dp, Purple.copy(.2f))
+            .background(Purple)
+        ,
     ) {
-
-        Row {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                SatelliteStatusIcon(isActive = true)
-                AnimatedVisibility(visible = showConnectionData.value) {
-                    Row {
-                        Spacer(modifier = Modifier.width(10.dp))
-                        Text("GPS Aktív", color = White, fontSize = 13.sp)
+        Row(
+            Modifier
+                .align(Alignment.Center)
+                .basicMarquee(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            repeat(4){
+                Spacer(modifier = Modifier.width(100.dp))
+                Text(text = "Új üzenet érkezett!", fontSize = 20.sp, color = White, fontWeight = FontWeight.Bold, modifier = Modifier)
+                Spacer(modifier = Modifier.width(100.dp))
+            }
+        }
+        Row(
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .clip(RoundedCornerShape(0.dp))
+                .clickable {
+                    showConnectionData.value = showConnectionData.value.not()
+                }
+                .background(Purple, RoundedCornerShape(0.dp))
+                .padding(horizontal = 20.dp, vertical = 10.dp),
+        ) {
+            VerticalDivider(Modifier.height(30.dp), color = MediumPurple)
+            Spacer(modifier = Modifier.width(20.dp))
+            Row {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    SatelliteStatusIcon(isActive = true)
+                    AnimatedVisibility(visible = showConnectionData.value) {
+                        Row {
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Text("GPS Aktív", color = White, fontSize = 13.sp)
+                        }
                     }
                 }
-            }
-            Spacer(modifier = Modifier.width(20.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                DataConnectionStatusIcon(isActive = false)
+                Spacer(modifier = Modifier.width(20.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    DataConnectionStatusIcon(isActive = false)
 
-                AnimatedVisibility(visible = showConnectionData.value) {
-                    Row {
-                        Spacer(modifier = Modifier.width(10.dp))
-                        Text("Adatkapcsolat nincs", color = White, fontSize = 13.sp)
+                    AnimatedVisibility(visible = showConnectionData.value) {
+                        Row {
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Text("Adatkapcsolat nincs", color = White, fontSize = 13.sp)
+                        }
                     }
                 }
             }
         }
     }
+
 }
 
 @Composable
@@ -202,17 +262,45 @@ fun HomeDotPatternBackground() {
 
 @Composable
 fun HomeContent() {
-    Box(
+
+    val selectedButton = remember {
+        mutableStateOf(HomeButton.UZENETEK)
+    }
+
+    val lastSelectedButton = remember {
+        mutableStateOf(HomeButton.UZENETEK)
+    }
+
+
+    Column(
         modifier = Modifier
             .background(Purple)
             .fillMaxSize(),
-        contentAlignment = Alignment.BottomEnd
     ) {
-        Column {
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
             HomeHeader()
-            HomeBody()
+            HomeBody(
+                selectedButton = selectedButton.value,
+                onSelectedButtonChanged = {
+                    lastSelectedButton.value = selectedButton.value
+                    selectedButton.value = it
+                }
+            )
         }
-        StatusDisplay()
+        Column(
+            modifier = Modifier
+                .background(LightGrey)
+        ) {
+            StatusDisplay(
+                modifier = Modifier,
+                lastSelectedButton = lastSelectedButton.value,
+                onLastSelectedButtonClicked = {
+                    selectedButton.value = lastSelectedButton.value
+                }
+            )
+        }
     }
 }
 
@@ -221,7 +309,10 @@ fun HomeHeader() {
     Row(
         modifier = Modifier
             .background(Purple)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(bottom = 20.dp)
+            .height(IntrinsicSize.Max)
+        ,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(
@@ -238,12 +329,14 @@ fun HomeHeader() {
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.Top
         ) {
-            //HomeDelayOrHurry()
-            Spacer(modifier = Modifier.width(10.dp))
+            HomeHandrail(modifier = Modifier.fillMaxHeight())
+            HomeDelayOrHurry(modifier = Modifier.fillMaxHeight())
+            Spacer(modifier = Modifier.width(60.dp))
             HomeDateAndTime()
         }
     }
 }
+
 
 
 @Composable
@@ -252,16 +345,16 @@ fun HomeDelayOrHurry(
 ) {
     Column(
         modifier = modifier
-            .padding(top = 40.dp)
+            .padding(top = 20.dp)
+            .aspectRatio(1f)
             .background(
-                AlertBackgroundRed,
-                RoundedCornerShape(10.dp)
-            )
-            .border(1.dp, AlertRed, RoundedCornerShape(10.dp)),
+                AlertRed,
+                RoundedCornerShape(20.dp)
+            ),
         verticalArrangement = Arrangement.Center
     ) {
-        Text(text = "+ 3", modifier = Modifier
-            .padding(10.dp), color = AlertRed, fontWeight = FontWeight.Bold, fontSize = 40.sp)
+        Text(text = "+3", modifier = Modifier
+            .padding(horizontal = 30.dp, vertical = 10.dp), color = AlertBackgroundRed, fontWeight = FontWeight.Bold, fontSize = 40.sp)
 
     }
 }
@@ -288,19 +381,21 @@ fun HomeNextStation() {
     }
 }
 
-enum class HomeButton(val text: String){
-    TEVEKENYSEG("Tevékenység"),
-    TAROLT_HANGOK("Tárolt hangok"),
-    BEALLITASOK("Beállítások"),
-    UZENET_KULDES("Üzenet küldés"),
-    BEERKEZETT_UZENETEK("Beérkezett üz.")
+enum class HomeButton(val text: String, val isMainButton: Boolean) {
+    TEVEKENYSEG("Tevékenység", true),
+    UZENETEK("Üzenetek", true),
+    UZENET_KULDESE("Üzenetek", false),
+    TAROLT_HANGOK("Tárolt hangok", true),
+    BEALLITASOK("Beállítások", true),
 }
 
+
 @Composable
-fun HomeBody() {
-    val selectedButton = remember {
-        mutableStateOf(HomeButton.TAROLT_HANGOK)
-    }
+fun HomeBody(
+    selectedButton: HomeButton,
+    onSelectedButtonChanged: (HomeButton) -> Unit
+) {
+
 
     Box(
         Modifier
@@ -312,16 +407,19 @@ fun HomeBody() {
         HomeDotPatternBackground()
         Column {
             HomeButtons(
-                selectedButton = selectedButton.value
+                selectedButton = selectedButton
             ) {
-                selectedButton.value = it
+                 onSelectedButtonChanged(it)
             }
             Row(
-                Modifier.padding(top = 15.dp, bottom = 30.dp, end = 30.dp, start = 30.dp)
+                Modifier.padding(top = 10.dp, bottom = 20.dp, end = 30.dp, start = 30.dp)
             ) {
                 HomeJourney()
                 HomeSelectedButtonContent(
-                    selectedButton = selectedButton.value
+                    selectedButton = selectedButton,
+                    onNavigateToCreateMessage = {
+                        onSelectedButtonChanged(HomeButton.UZENET_KULDESE)
+                    }
                 )
             }
         }
@@ -333,34 +431,37 @@ fun HomeButtons(
     selectedButton: HomeButton,
     onSelectButton: (HomeButton) -> Unit,
 ) {
-    Row(Modifier.padding(start = 30.dp, end = 30.dp, top = 20.dp, bottom = 10.dp)) {
-        HomeButton.entries
+    Row(Modifier.padding(start = 30.dp, end = 30.dp, top = 15.dp, bottom = 10.dp)) {
+        HomeButton.entries.filter { it.isMainButton }
             .forEach { button ->
-                HomePrimaryOutlinedButton(button = button, modifier = Modifier.weight(1f), onSelectButton = onSelectButton, isSelected = button == selectedButton)
-                if(button != HomeButton.BEERKEZETT_UZENETEK) Spacer(modifier = Modifier.width(20.dp))
+                HomePrimaryOutlinedButton(button = button, modifier = Modifier.weight(1f), onSelectButton = onSelectButton, isSelected = button.text == selectedButton.text)
+                if(button != HomeButton.entries.last()) Spacer(modifier = Modifier.width(20.dp))
             }
     }
 }
 
 
 @Composable
-fun HomeHandrail(){
+fun HomeHandrail(modifier: Modifier) {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier.padding(end = 30.dp)
+        modifier = modifier
+            .padding(end = 20.dp, top = 20.dp)
+            .aspectRatio(1f)
+            .background(White.copy(.2f), RoundedCornerShape(20.dp))
     ) {
         Box(
             Modifier
                 .fillMaxHeight()
-                .width(35.dp)
-                .background(BusDarkBlue),
+                .width(23.dp)
+                .background(BusDarkBlue, RoundedCornerShape(5.dp)),
         )
         Box(
             Modifier
                 .padding(start = 8.dp)
                 .fillMaxHeight()
-                .width(30.dp)
-                .background(BusBlue),
+                .width(20.dp)
+                .background(BusBlue, RoundedCornerShape(2.dp)),
         )
         Row {
             Box(
@@ -369,23 +470,42 @@ fun HomeHandrail(){
             ) {
                 Box(
                     Modifier
-                        .height(80.dp)
-                        .width(50.dp)
-                        .background(Color.Yellow)
+                        .height(60.dp)
+                        .width(40.dp)
+                        .background(DarkTicketYellow, RoundedCornerShape(5.dp))
                 )
                 Box(
                     Modifier
-                        .height(30.dp)
-                        .width(30.dp)
-                        .background(Color.Green),
-                    contentAlignment = Alignment.Center
-                ){
-                    Text(text = "STOP", fontSize = 8.sp, color = Purple.copy(.4f))
+                        .padding(start = 8.dp)
+                        .height(60.dp)
+                        .width(37.dp)
+                        .background(TicketYellow, RoundedCornerShape(3.dp))
+                )
+                Box(
+                    contentAlignment = Alignment.TopCenter,
+                    modifier = Modifier.padding(start = 8.dp)
+                ) {
+                    Box(
+                        Modifier
+                            .height(15.dp)
+                            .width(27.dp)
+                            .background(DarkGray, RoundedCornerShape(2.dp)),
+                    )
+                    Box(
+                        Modifier
+                            .height(5.dp)
+                            .width(20.dp)
+                            .background(White, RoundedCornerShape(1.dp)),
+                    )
                 }
             }
         }
+        Icon(Icons.Rounded.Close, contentDescription = null, tint = AlertRed, modifier = Modifier
+            .size(100.dp)
+            .offset(x = 4.dp))
     }
 }
+
 
 @Composable
 fun HomePrimaryOutlinedButton(
@@ -410,7 +530,6 @@ fun HomePrimaryOutlinedButton(
         Button(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(0.dp)
                 .background(
                     buttonContainerColor.value,
                     RoundedCornerShape(20.dp)
@@ -421,16 +540,16 @@ fun HomePrimaryOutlinedButton(
             shape = RoundedCornerShape(20.dp),
             colors = ButtonDefaults.buttonColors(Color.Transparent),
         ) {
-            Text(button.text, modifier = Modifier.padding(10.dp), fontSize = 20.sp, color = buttonContentColor.value)
-            if(button == HomeButton.BEERKEZETT_UZENETEK)
+            Text(button.text, modifier = Modifier.padding(10.dp, vertical = 15.dp), fontSize = 20.sp, color = buttonContentColor.value)
+            if(button == HomeButton.UZENETEK)
                 Box(
                     Modifier
                         .border(1.dp, AlertRed, CircleShape)
-                        .size(30.dp)
+                        .size(40.dp)
                         .background(AlertRed, CircleShape),
                     contentAlignment = Alignment.Center
                 ){
-                    Text(text = "1", color = AlertBackgroundRed, fontWeight = FontWeight.Bold)
+                    Text(text = "1", color = AlertBackgroundRed, fontWeight = FontWeight.Bold, fontSize = 20.sp)
                 }
         }
     }
@@ -536,7 +655,8 @@ fun HomeJourney(
 @Composable
 fun HomeSelectedButtonContent(
     modifier: Modifier = Modifier,
-    selectedButton: HomeButton
+    selectedButton: HomeButton,
+    onNavigateToCreateMessage: () -> Unit
 ) {
     Column {
         Column(
@@ -550,23 +670,359 @@ fun HomeSelectedButtonContent(
         ) {
             when(selectedButton){
                 HomeButton.TEVEKENYSEG -> {
-
+                    HomeActivity()
                 }
-                HomeButton.UZENET_KULDES -> {
-
+                HomeButton.UZENETEK -> {
+                    HomeMessages(
+                        navigateToCreateMessage = onNavigateToCreateMessage
+                    )
                 }
                 HomeButton.TAROLT_HANGOK -> {
                     HomeStoredSounds()
                 }
                 HomeButton.BEALLITASOK -> {
-
+                    HomeSettings()
                 }
-                HomeButton.BEERKEZETT_UZENETEK -> {
 
+                HomeButton.UZENET_KULDESE -> {
+                    HomeNewMessage()
                 }
             }
         }
     }
+}
+
+
+enum class MessageItems{
+    Bejövő,
+    Kimenő
+}
+
+@Composable
+fun HomeMessages(
+    navigateToCreateMessage: () -> Unit
+) {
+    val pagerState = rememberPagerState(pageCount = { 2 }, initialPage = 0)
+    val selectedTabIndex = remember { derivedStateOf { pagerState.currentPage } }
+    val scope = rememberCoroutineScope()
+
+    TabRow(
+        selectedTabIndex = selectedTabIndex.value,
+        containerColor = White,
+        divider = {
+            HorizontalDivider(color = Purple.copy(.3f))
+        },
+        indicator = { tabPositions ->
+            Box(
+                modifier = Modifier
+                    .tabIndicatorOffset(tabPositions[pagerState.currentPage])
+                    .height(4.dp)
+                    .background(color = Purple, CircleShape)
+            )
+        }
+    ) {
+        MessageItems.entries.forEachIndexed { index, currentTab ->
+            Tab(
+                selected = selectedTabIndex.value == index,
+                selectedContentColor = Purple,
+                unselectedContentColor = Color.Gray,
+                onClick = {
+                    scope.launch {
+                        pagerState.animateScrollToPage(currentTab.ordinal)
+                    }
+                },
+                text = {
+                    Row {
+                        Text(
+                            text = currentTab.name,
+                            fontSize = 20.sp,
+                            modifier = Modifier.padding(10.dp)
+                        )
+                    } },
+            )
+        }
+    }
+
+    Box(
+        contentAlignment = Alignment.BottomEnd
+    ) {
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier
+                .fillMaxWidth()
+        ) { page ->
+            when (page) {
+                0 -> HomeMessagesIncoming()
+                1 -> HomeMessagesOutgoing()
+            }
+        }
+        ExtendedFloatingActionButton(
+            shape = RoundedCornerShape(30.dp, 0.dp, 0.dp, 0.dp),
+            elevation = FloatingActionButtonDefaults.elevation(0.dp),
+            containerColor = Purple,
+            contentColor = White,
+            onClick = { navigateToCreateMessage() }) {
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.padding(20.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(imageVector = Icons.Default.Create, contentDescription = null)
+                Spacer(modifier = Modifier.width(20.dp))
+                Text(text = "Üzenet küldése", fontSize = 20.sp, modifier = Modifier.padding(0.dp), fontWeight = FontWeight.Bold)
+            }
+        }
+    }
+}
+
+enum class MessagePriority { LOW, NORMAL, HIGH }
+
+@Composable
+fun HomeMessagesOutgoing() {
+    val state = rememberLazyListState()
+    LazyColumn(
+        Modifier
+            .simpleVerticalScrollbar(state)
+            .fillMaxSize(),
+        state = state
+    ) {
+        item {
+            HomeMessageItem(
+                sender = "Sanyi",
+                text = "Indulok!",
+                priority = MessagePriority.LOW,
+                timestamp = getCurrentTimestamp()
+            )
+        }
+        item {
+            HomeMessageItem(
+                sender = "Központ",
+                text = "Nem!",
+                priority = MessagePriority.LOW,
+                timestamp = getCurrentTimestamp()
+            )
+        }
+        item {
+            Spacer(modifier = Modifier.height(80.dp))
+        }
+    }
+}
+
+@Composable
+fun HomeMessagesIncoming() {
+    val state = rememberLazyListState()
+    LazyColumn(
+        Modifier
+            .simpleVerticalScrollbar(state)
+            .fillMaxSize(),
+        state = state
+    ) {
+        item {
+            HomeMessageItem(
+                sender = "Központ",
+                text = "Kérlek, indulj a 7-es járaton 08:30-kor a Központi pályaudvarra (B-235).",
+                priority = MessagePriority.HIGH,
+                isRead = false,
+                timestamp = getCurrentTimestamp()
+            )
+        }
+        item {
+            HomeMessageItem(
+                sender = "Sanyi",
+                text = "Nem!",
+                priority = MessagePriority.LOW,
+                isRead = false,
+                timestamp = getCurrentTimestamp()
+            )
+        }
+        item {
+            HomeMessageItem(
+                sender = "Béla",
+                text = "Elindultam",
+                priority = MessagePriority.LOW,
+                isRead = true,
+                timestamp = getCurrentTimestamp()
+            )
+        }
+        item {
+            Spacer(modifier = Modifier.height(80.dp))
+        }
+    }
+}
+
+@Composable
+fun HomeNewMessage() {
+    val state = rememberLazyListState()
+    LazyColumn(
+        Modifier
+            .simpleVerticalScrollbar(state)
+            .fillMaxSize(),
+        state = state
+    ) {
+        item {
+            Spacer(modifier = Modifier.height(20.dp))
+        }
+        item {
+            HomeNewMessageItem(text = "Igen")
+        }
+        item {
+            HomeNewMessageItem(text = "Nem")
+        }
+        item {
+            HomeNewMessageItem(text = "Hívás kérés")
+        }
+        item {
+            HomeNewMessageItem(text = "Utas lemaradás")
+        }
+    }
+}
+
+@Composable
+fun HomeNewMessageItem(text: String) {
+    Row(
+        modifier = Modifier
+            .padding(horizontal = 20.dp, vertical = 10.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .clickable { }
+            .background(Purple.copy(0.04f))
+            .border(1.dp, Purple.copy(0.3f), RoundedCornerShape(10.dp))
+            .padding(30.dp)
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(text = text, fontSize = 20.sp, color = Purple)
+    }
+}
+
+@Composable
+fun HomeMessageItem(
+    sender: String,
+    priority: MessagePriority,
+    text: String,
+    isRead: Boolean = true,
+    timestamp: String
+) {
+    val animatedRotation by rememberInfiniteTransition(label = "").animateFloat(
+        initialValue = -10f,
+        targetValue = 10f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 800, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ), label = ""
+    )
+
+    val backgroundColor = getBackgroundColor(priority)
+    val textColor = getTextColor(priority)
+    val fontWeight = if (isRead) FontWeight.Normal else FontWeight.Bold
+
+    Row(
+        modifier = Modifier
+            .padding(20.dp, top = 30.dp, end = 20.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .clickable { }
+            .background(backgroundColor)
+            .border(1.dp, Purple.copy(0.3f), RoundedCornerShape(10.dp))
+            .padding(10.dp)
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        HomeMessageItemContent(sender, text, textColor, fontWeight, modifier = Modifier.weight(1f))
+        HomeMessageItemTimestamp(timestamp, modifier = Modifier.padding(start = 8.dp).align(Alignment.CenterVertically))
+        HomeMessageItemIcons(priority, animatedRotation, isRead)
+    }
+}
+
+@Composable
+fun HomeMessageItemContent(
+    sender: String,
+    text: String,
+    textColor: Color,
+    fontWeight: FontWeight,
+    modifier: Modifier
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = sender,
+            fontSize = 20.sp,
+            color = textColor,
+            modifier = Modifier.padding(top = 10.dp, start = 10.dp),
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = text,
+            fontSize = 20.sp,
+            color = textColor,
+            modifier = Modifier.padding(10.dp),
+            fontWeight = fontWeight
+        )
+    }
+}
+
+@Composable
+fun HomeMessageItemTimestamp(
+    timestamp: String,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier.fillMaxHeight(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            modifier = Modifier.padding(10.dp),
+            text = timestamp,
+            fontSize = 16.sp,
+            color = Gray,
+        )
+    }
+}
+
+@Composable
+fun HomeMessageItemIcons(priority: MessagePriority, animatedRotation: Float, isRead: Boolean, modifier: Modifier = Modifier) {
+    val transition = rememberInfiniteTransition(label = "")
+    val animatedOffsetY by transition.animateFloat(
+        initialValue = -20f,
+        targetValue = 20f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 2000, easing = EaseInBounce),
+            repeatMode = RepeatMode.Reverse
+        ), label = ""
+    )
+
+    Row(modifier = modifier){
+        if (!isRead) {
+            Icon(
+                imageVector = Icons.Default.Circle,
+                contentDescription = null,
+                tint = if(priority == MessagePriority.HIGH) AlertRed else Purple,
+                modifier = Modifier
+                    .graphicsLayer {
+                        translationX = animatedOffsetY
+                    }
+                    .padding(20.dp)
+                    .graphicsLayer { rotationZ = animatedRotation }
+                    .size(15.dp)
+            )
+        }
+    }
+}
+
+private fun getBackgroundColor(priority: MessagePriority): Color {
+    return when (priority) {
+        MessagePriority.LOW, MessagePriority.NORMAL -> Purple.copy(0.04f)
+        MessagePriority.HIGH -> AlertBackgroundRed
+    }
+}
+
+private fun getTextColor(priority: MessagePriority): Color {
+    return when (priority) {
+        MessagePriority.LOW, MessagePriority.NORMAL -> Purple
+        MessagePriority.HIGH -> AlertRed
+    }
+}
+
+private fun getCurrentTimestamp(): String {
+    val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
+    return sdf.format(Date())
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -619,6 +1075,153 @@ fun HomeStoredSounds() {
         }
     }
 }
+
+@Composable
+fun HomeSettings() {
+    LazyColumn(
+        Modifier
+    ) {
+        item {
+            Column(
+                modifier = Modifier.padding(top = 30.dp, start = 20.dp, end = 20.dp)
+            ) {
+                Text(text = "Verzió: 54.3.343", fontSize = 20.sp, color = Purple)
+                Text(text = "Nem áll rendelkezése új adatcsomag", fontSize = 20.sp, color = Purple)
+            }
+        }
+        item {
+            HorizontalDivider(color = Purple.copy(.2f), modifier = Modifier.padding(vertical = 20.dp))
+        }
+        item {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(20.dp),
+                modifier = Modifier.padding(horizontal = 20.dp)
+            ) {
+                HomeSecondaryButton(modifier = Modifier.weight(1f)) {
+                    Text("Adat szinkronizáció", color = Purple, fontSize = 20.sp)
+                }
+                HomeSecondaryButton(modifier = Modifier.weight(1f)) {
+                    Text("Fényerő", color = Purple, fontSize = 20.sp)
+                }
+            }
+        }
+        item {
+            Spacer(modifier = Modifier.height(30.dp))
+        }
+        item {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(20.dp),
+                modifier = Modifier.padding(horizontal = 20.dp)
+            ) {
+                HomeSecondaryButton(modifier = Modifier.weight(1f)) {
+                    Text("Jármű állapot", color = Purple, fontSize = 20.sp)
+                }
+                HomeSecondaryButton(modifier = Modifier.weight(1f)) {
+                    Text("Eszköz állapot", color = Purple, fontSize = 20.sp)
+                }
+            }
+        }
+        item {
+            Spacer(modifier = Modifier.height(30.dp))
+        }
+        item {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(20.dp),
+                modifier = Modifier.padding(horizontal = 20.dp)
+            ) {
+                HomeSecondaryButton(modifier = Modifier.weight(1f)) {
+                    Text("Razzia", color = Purple, fontSize = 20.sp)
+                }
+                HomeSecondaryButton(modifier = Modifier.weight(1f)) {
+                    Text("Kijelzők", color = Purple, fontSize = 20.sp)
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun HomeActivity() {
+    LazyColumn(
+        Modifier
+    ) {
+        item { 
+            Spacer(modifier = Modifier.height(30.dp))
+        }
+        item {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(20.dp),
+                modifier = Modifier.padding(horizontal = 20.dp)
+            ) {
+                HomeSecondaryButton(modifier = Modifier.weight(1f)) {
+                    Text("Viszonylat útvonalai", color = Purple, fontSize = 20.sp)
+                }
+                HomeSecondaryButton(modifier = Modifier.weight(1f)) {
+                    Text("Egyéb útvonalak", color = Purple, fontSize = 20.sp)
+                }
+            }
+        }
+        item {
+            Spacer(modifier = Modifier.height(30.dp))
+        }
+        item {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(20.dp),
+                modifier = Modifier.padding(horizontal = 20.dp)
+            ) {
+                HomeSecondaryButton(modifier = Modifier.weight(1f)) {
+                    Text("Üzemanyag", color = Purple, fontSize = 20.sp)
+                }
+                HomeSecondaryButton(modifier = Modifier.weight(1f)) {
+                    Text("Forgalmi szám", color = Purple, fontSize = 20.sp)
+                }
+            }
+        }
+        item {
+            Spacer(modifier = Modifier.height(30.dp))
+        }
+        item {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(20.dp),
+                modifier = Modifier.padding(horizontal = 20.dp)
+            ) {
+                HomeSecondaryButton(modifier = Modifier.weight(1f)) {
+                    Text("Navigáció", color = Purple, fontSize = 20.sp)
+                }
+                HomeSecondaryButton(modifier = Modifier.weight(1f)) {
+                    Row(
+                        horizontalArrangement = Arrangement.End,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Kijelentkezés", color = Purple, fontSize = 20.sp)
+                        Spacer(modifier = Modifier.width(20.dp))
+                        Icon(imageVector = Icons.AutoMirrored.Filled.Logout, contentDescription = null, tint = Purple)
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun HomeSecondaryButton(
+    modifier: Modifier = Modifier,
+    text: @Composable () -> Unit
+) {
+    Button(
+        onClick = { },
+        modifier = modifier.border(1.dp, Purple.copy(.2f), RoundedCornerShape(20.dp)),
+        shape = RoundedCornerShape(20.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = LightPurple)
+    ) {
+        Box(modifier = Modifier.padding(20.dp)) {
+            text()
+        }
+    }
+}
+
 
 @Composable
 fun HomeInformationStoredSounds() {
@@ -678,45 +1281,19 @@ enum class StoredSoundItems{
 
 @Composable
 fun HomeStoredSoundItem(text: String) {
-    val isSoundButtonPressed = remember {
-        mutableStateOf(false)
-    }
+    val isSoundButtonPressed = remember { mutableStateOf(false) }
 
-    val playVoiceTime = remember {
-        mutableFloatStateOf(0f)
-    }
-
-    val voiceLevel = remember {
-        mutableIntStateOf(0)
-    }
+    val voiceLevel = remember { mutableIntStateOf(0) }
 
     LaunchedEffect(isSoundButtonPressed.value) {
-        if(isSoundButtonPressed.value){
-            delay(5000)
+        if (isSoundButtonPressed.value) {
+            repeat(10) {
+                voiceLevel.intValue = (voiceLevel.intValue + 1) % 3
+                delay(500)
+            }
+            delay(1000)
             isSoundButtonPressed.value = false
-        }
-    }
-
-    LaunchedEffect(isSoundButtonPressed.value) {
-        if(isSoundButtonPressed.value){
-            for (i in 0..9){
-                if(voiceLevel.intValue == 2){
-                    voiceLevel.intValue = 0
-                }
-                else voiceLevel.intValue += 1
-                delay(500)
-            }
             voiceLevel.intValue = 0
-        }
-    }
-
-    LaunchedEffect(isSoundButtonPressed.value) {
-        if(isSoundButtonPressed.value){
-            for (i in 0..9){
-                playVoiceTime.floatValue = i.toFloat()
-                delay(500)
-            }
-            playVoiceTime.floatValue = 0f
         }
     }
 
@@ -735,7 +1312,7 @@ fun HomeStoredSoundItem(text: String) {
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if(isSoundButtonPressed.value)
+            if (isSoundButtonPressed.value)
                 AnimatedVolumeIcon(volumeLevel = voiceLevel.intValue)
             else Icon(
                 imageVector = Icons.AutoMirrored.Filled.VolumeMute,
@@ -746,19 +1323,11 @@ fun HomeStoredSoundItem(text: String) {
                     .size(60.dp)
             )
             Text(text = text, fontSize = 20.sp, color = Purple, modifier = Modifier.padding(start = 20.dp))
+        }
 
-        }
-        AnimatedVisibility(visible = isSoundButtonPressed.value) {
-            TrackSlider(
-                value = playVoiceTime.floatValue,
-                onValueChange = {},
-                onValueChangeFinished = { /*TODO*/ },
-                songDuration = 10f
-            )
-        }
     }
-    //HorizontalDivider(color = Purple.copy(.3f), modifier = Modifier.padding(horizontal = 20.dp))
 }
+
 
 @Composable
 fun AnimatedVolumeIcon(volumeLevel: Int) {
@@ -774,7 +1343,7 @@ fun AnimatedVolumeIcon(volumeLevel: Int) {
         tint = Purple,
         modifier = Modifier
             .padding(start = 20.dp)
-            .width(60.dp)
+            .size(60.dp)
     )
 }
 
@@ -848,7 +1417,7 @@ fun HomeDateAndTime(
 
     Box(
         modifier = modifier
-            .padding(top = 30.dp, end = 30.dp, bottom = 20.dp)
+            .padding(top = 30.dp, end = 30.dp)
     ) {
         Column(
             modifier = Modifier
@@ -857,11 +1426,11 @@ fun HomeDateAndTime(
         ) {
             Text(
                 text = currentTime.value.format(timeFormatter),
-                fontSize = 60.sp,
+                fontSize = 50.sp,
                 color = White,
                 fontWeight = FontWeight.Bold
             )
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(5.dp))
             Text(
                 text = currentDate.format(dateFormatter),
                 fontSize = 30.sp,
@@ -946,6 +1515,8 @@ fun PreviewVerticalProgressLine() {
 fun HomeLine(
     station: Station
 ) {
+    val stationBoxSize = if(station.isTerminus) 20.dp else 30.dp
+
     Column(
         verticalArrangement = Arrangement.Top,
         modifier = Modifier
@@ -961,16 +1532,16 @@ fun HomeLine(
                     Modifier
                         .padding(5.dp)
                         .border(5.dp, Green.copy(.3f), CircleShape)
-                        .size(20.dp)
+                        .size(stationBoxSize)
                         .padding(5.dp)
                         .background(Green, CircleShape))
             } else {
                 Box(
                     modifier = Modifier
                         .border(5.dp, Purple, CircleShape)
-                        .size(30.dp)
+                        .size(stationBoxSize)
                         .background(
-                            if (station.isArrived) Purple else Color.Transparent,
+                            if (station.isArrived) Purple else Color.White,
                             shape = CircleShape
                         )
                 )
@@ -982,7 +1553,7 @@ fun HomeLine(
                 ) {
                     Text(text = station.time, fontSize = 20.sp, fontWeight = if(station.isTerminus) FontWeight.Bold else FontWeight.Normal, color = Purple)
                     Spacer(modifier = Modifier.width(30.dp))
-                    if(!station.isArrived)
+                    if(station.isNext)
                     Text(text = "+ 3", modifier = Modifier
                         .background(
                             AlertBackgroundRed,
@@ -996,7 +1567,8 @@ fun HomeLine(
         }
 
         Box(
-            contentAlignment = Alignment.CenterStart,
+            modifier = Modifier.fillMaxWidth().padding(start = 0.dp),
+            contentAlignment = Alignment.CenterStart
         ) {
             Canvas(
                 modifier = Modifier
@@ -1004,9 +1576,9 @@ fun HomeLine(
             ) {
                 drawLine(
                     color = Purple,
-                    start = center.copy(y = -45f, x = 45f),
-                    end = center.copy(y = size.height + 45f, x = 45f),
-                    strokeWidth = if(station.isArrived) 30f else 10f,
+                    start = center.copy(y = -40f, x = 30f.dp.toPx()/2),
+                    end = center.copy(y = size.height + 65f, x = 30f.dp.toPx()/2),
+                    strokeWidth = if(station.isArrived) 30f else 8f,
                     pathEffect = if(station.isArrived) PathEffect.cornerPathEffect(0f) else PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
                 )
             }

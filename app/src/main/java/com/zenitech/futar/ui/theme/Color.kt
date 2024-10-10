@@ -25,3 +25,6 @@ val LightGrey = Color(0xFFECECEC)
 
 val AlertBackgroundRed = Color(0xFFFDE1E1)
 val AlertRed = Color(0xFF9B3232)
+
+val TicketYellow = Color(0xFFFFDF0C)
+val DarkTicketYellow = Color(0xFFAD9B2A)
