@@ -1,12 +1,8 @@
 package com.zenitech.futar.feature
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.animateValueAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -41,9 +37,6 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.SevereCold
 import androidx.compose.material.icons.filled.SignalCellularAlt
-import androidx.compose.material.icons.filled.VolumeDown
-import androidx.compose.material.icons.filled.VolumeMute
-import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -57,7 +50,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -66,23 +58,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.graphics.Paint
-import androidx.compose.ui.graphics.PaintingStyle
 import androidx.compose.ui.graphics.PathEffect
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.ContentDrawScope
-import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -103,9 +83,6 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import kotlin.math.cos
-import kotlin.math.hypot
-import kotlin.math.sin
 
 @Composable
 fun SatelliteStatusIcon(isActive: Boolean) {
@@ -340,7 +317,7 @@ fun HomeBody() {
                 selectedButton.value = it
             }
             Row(
-                Modifier.padding(30.dp)
+                Modifier.padding(top = 15.dp, bottom = 30.dp, end = 30.dp, start = 30.dp)
             ) {
                 HomeJourney()
                 HomeSelectedButtonContent(
@@ -743,7 +720,7 @@ fun HomeStoredSoundItem(text: String) {
         }
     }
 
-    Row(
+    Column(
         modifier = Modifier
             .padding(20.dp, top = 30.dp, end = 20.dp)
             .clip(RoundedCornerShape(10.dp))
@@ -754,20 +731,23 @@ fun HomeStoredSoundItem(text: String) {
             .border(1.dp, Purple.copy(.3f), RoundedCornerShape(10.dp))
             .padding(10.dp)
             .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start
     ) {
-        if(isSoundButtonPressed.value)
-            AnimatedVolumeIcon(volumeLevel = voiceLevel.intValue)
-        else Icon(
-            imageVector = Icons.AutoMirrored.Filled.VolumeMute,
-            contentDescription = null,
-            tint = Purple,
-            modifier = Modifier
-                .padding(start = 20.dp)
-                .size(60.dp)
-        )
-        Text(text = text, fontSize = 20.sp, color = Purple, modifier = Modifier.padding(start = 20.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if(isSoundButtonPressed.value)
+                AnimatedVolumeIcon(volumeLevel = voiceLevel.intValue)
+            else Icon(
+                imageVector = Icons.AutoMirrored.Filled.VolumeMute,
+                contentDescription = null,
+                tint = Purple,
+                modifier = Modifier
+                    .padding(start = 20.dp)
+                    .size(60.dp)
+            )
+            Text(text = text, fontSize = 20.sp, color = Purple, modifier = Modifier.padding(start = 20.dp))
+
+        }
         AnimatedVisibility(visible = isSoundButtonPressed.value) {
             TrackSlider(
                 value = playVoiceTime.floatValue,
@@ -794,7 +774,7 @@ fun AnimatedVolumeIcon(volumeLevel: Int) {
         tint = Purple,
         modifier = Modifier
             .padding(start = 20.dp)
-            .size(60.dp)
+            .width(60.dp)
     )
 }
 
@@ -996,8 +976,7 @@ fun HomeLine(
                 )
             }
             Spacer(modifier = Modifier.width(20.dp))
-            Column(
-            ) {
+            Column {
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
