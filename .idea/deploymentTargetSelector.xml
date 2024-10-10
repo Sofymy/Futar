@@ -26,6 +26,14 @@
       </SelectionState>
       <SelectionState runConfigName="HomeScreenPreview - tablet">
         <option name="selectionMode" value="DROPDOWN" />
+        <DropdownSelection timestamp="2024-10-10T21:58:28.234154100Z">
+          <Target type="DEFAULT_BOOT">
+            <handle>
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\szeg.zsofia\.android\avd\Pixel_Tablet_Edited_x_API_33.avd" />
+            </handle>
+          </Target>
+        </DropdownSelection>
+        <DialogSelection />
       </SelectionState>
     </selectionStates>
   </component>
