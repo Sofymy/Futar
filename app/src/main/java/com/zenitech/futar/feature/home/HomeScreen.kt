@@ -54,7 +54,7 @@ fun HomeScreen(){
 fun HomeContent() {
 
     val selectedButton = remember {
-        mutableStateOf(HomeButton.UZENET_KULDESE)
+        mutableStateOf(HomeButton.TEVEKENYSEG)
     }
 
     Column(
