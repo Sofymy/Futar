@@ -27,7 +27,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.zenitech.futar.R
-import com.zenitech.futar.feature.home.HomeScreen
 import com.zenitech.futar.ui.theme.*
 import kotlinx.coroutines.delay
 import java.time.LocalDate
@@ -38,12 +37,12 @@ import java.time.format.DateTimeFormatter
 @Preview(name = "tablet", device = "spec:shape=Normal,width=1280,height=800,unit=dp,dpi=480")
 fun HomeHeaderPreview(){
     FutarTheme {
-        HomeHeader()
+        HomeHeader(isRazziaMode = true)
     }
 }
 
 @Composable
-fun HomeHeader() {
+fun HomeHeader(isRazziaMode: Boolean = true) {
     Row(
         modifier = Modifier
             .background(Purple)
@@ -66,7 +65,7 @@ fun HomeHeader() {
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.Top
         ) {
-            HomeHeaderHandrail(modifier = Modifier.fillMaxHeight())
+            if(isRazziaMode) HomeHeaderHandrail(modifier = Modifier.fillMaxHeight())
             HomeHeaderDelayOrHurry(modifier = Modifier.fillMaxHeight())
             Spacer(modifier = Modifier.width(30.dp))
             HomeHeaderDateAndTime(modifier = Modifier.fillMaxHeight())

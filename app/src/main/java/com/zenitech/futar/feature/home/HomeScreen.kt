@@ -41,17 +41,21 @@ import com.zenitech.futar.ui.theme.Purple
 @Preview(name = "tablet", device = "spec:shape=Normal,width=1280,height=800,unit=dp,dpi=480")
 fun HomeScreenPreview(){
     FutarTheme {
-        HomeScreen()
+        HomeScreen(isRazziaMode = true)
     }
 }
 
 @Composable
-fun HomeScreen(){
-    HomeContent()
+fun HomeScreen(
+    isRazziaMode: Boolean = true
+){
+    HomeContent(
+        isRazziaMode = isRazziaMode
+    )
 }
 
 @Composable
-fun HomeContent() {
+fun HomeContent(isRazziaMode: Boolean = true) {
 
     val selectedButton = remember {
         mutableStateOf(HomeButton.TEVEKENYSEG)
@@ -65,7 +69,9 @@ fun HomeContent() {
         Column(
             modifier = Modifier.weight(1f)
         ) {
-            HomeHeader()
+            HomeHeader(
+                isRazziaMode = isRazziaMode
+            )
             HomeBody(
                 selectedButton = selectedButton.value,
                 onSelectedButtonChanged = {
