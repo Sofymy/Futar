@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color.Companion.DarkGray
+import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -120,7 +121,6 @@ fun HomeHeaderNumberAndTerminalOfBus(
                     color = Purple,
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
-                    fontFamily = FontFamily(Font(R.font.led_board))
                 )
                 Row {
                     Icon(imageVector = Icons.Default.PlayArrow, contentDescription = null, tint = Purple)
