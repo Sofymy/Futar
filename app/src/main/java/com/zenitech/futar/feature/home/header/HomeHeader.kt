@@ -118,7 +118,7 @@ fun HomeHeaderNumberAndTerminalOfBus(
                 Text(
                     text = "133E",
                     color = Purple,
-                    fontSize = 32.sp,
+                    fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily(Font(R.font.led_board))
                 )
