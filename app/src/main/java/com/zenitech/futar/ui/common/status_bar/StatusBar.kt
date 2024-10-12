@@ -1,6 +1,4 @@
-@file:OptIn(ExperimentalFoundationApi::class)
-
-package com.zenitech.futar.feature.home.status_bar
+package com.zenitech.futar.ui.common.status_bar
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -35,7 +33,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.zenitech.futar.feature.home.header.HomeHeader
 import com.zenitech.futar.ui.theme.AlertRed
 import com.zenitech.futar.ui.theme.FutarTheme
 import com.zenitech.futar.ui.theme.Green
@@ -46,13 +43,18 @@ import com.zenitech.futar.ui.theme.Purple
 @Preview(name = "tablet", device = "spec:shape=Normal,width=1280,height=800,unit=dp,dpi=480")
 fun HomeStatusDisplayPreview(){
     FutarTheme {
-        HomeStatusDisplay(modifier = Modifier)
+        HomeStatusDisplay(
+            modifier = Modifier,
+            text =  "Text text text"
+        )
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeStatusDisplay(
     modifier: Modifier,
+    text: String
 ) {
     val showConnectionData = remember {
         mutableStateOf(false)
@@ -74,7 +76,7 @@ fun HomeStatusDisplay(
         ) {
             repeat(4){
                 Spacer(modifier = Modifier.width(100.dp))
-                Text(text = "Új üzenet érkezett!", fontSize = 20.sp, color = White, fontWeight = FontWeight.Bold, modifier = Modifier)
+                Text(text = text, fontSize = 20.sp, color = White, fontWeight = FontWeight.Bold, modifier = Modifier)
                 Spacer(modifier = Modifier.width(100.dp))
             }
         }

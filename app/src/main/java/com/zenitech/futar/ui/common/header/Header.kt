@@ -1,4 +1,4 @@
-package com.zenitech.futar.feature.home.header
+package com.zenitech.futar.ui.common.header
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
@@ -19,15 +19,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color.Companion.DarkGray
-import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.zenitech.futar.R
 import com.zenitech.futar.ui.theme.*
 import kotlinx.coroutines.delay
 import java.time.LocalDate
@@ -38,12 +34,12 @@ import java.time.format.DateTimeFormatter
 @Preview(name = "tablet", device = "spec:shape=Normal,width=1280,height=800,unit=dp,dpi=480")
 fun HomeHeaderPreview(){
     FutarTheme {
-        HomeHeader(isRazziaMode = true)
+        HomeHeader(isRazziaMode = true, isLoggedIn = false)
     }
 }
 
 @Composable
-fun HomeHeader(isRazziaMode: Boolean = true) {
+fun HomeHeader(isRazziaMode: Boolean = true, isLoggedIn: Boolean) {
     Row(
         modifier = Modifier
             .background(Purple)
@@ -52,13 +48,15 @@ fun HomeHeader(isRazziaMode: Boolean = true) {
             .height(IntrinsicSize.Max),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Row(
-            modifier = Modifier.weight(1f),
-            horizontalArrangement = Arrangement.Start,
-        ) {
-            HomeHeaderNumberAndTerminalOfBus(modifier = Modifier.fillMaxHeight())
-            Spacer(modifier = Modifier.width(30.dp))
-            HomeHeaderNumberOfShift(modifier = Modifier.fillMaxHeight())
+        if(isLoggedIn) {
+            Row(
+                modifier = Modifier.weight(1f),
+                horizontalArrangement = Arrangement.Start,
+            ) {
+                HomeHeaderNumberAndTerminalOfBus(modifier = Modifier.fillMaxHeight())
+                Spacer(modifier = Modifier.width(30.dp))
+                HomeHeaderNumberOfShift(modifier = Modifier.fillMaxHeight())
+            }
         }
 
         Row(
@@ -66,9 +64,11 @@ fun HomeHeader(isRazziaMode: Boolean = true) {
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.Top
         ) {
-            if(isRazziaMode) HomeHeaderHandrail(modifier = Modifier.fillMaxHeight())
-            HomeHeaderDelayOrHurry(modifier = Modifier.fillMaxHeight())
-            Spacer(modifier = Modifier.width(30.dp))
+            if(isLoggedIn){
+                if(isRazziaMode) HomeHeaderHandrail(modifier = Modifier.fillMaxHeight())
+                HomeHeaderDelayOrHurry(modifier = Modifier.fillMaxHeight())
+                Spacer(modifier = Modifier.width(30.dp))
+            }
             HomeHeaderDateAndTime(modifier = Modifier.fillMaxHeight())
         }
     }
