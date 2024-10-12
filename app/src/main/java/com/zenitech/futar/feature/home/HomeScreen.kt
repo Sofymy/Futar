@@ -28,13 +28,14 @@ import com.zenitech.futar.feature.home.body_right.HomeMessages
 import com.zenitech.futar.feature.home.body_right.HomeMessagesNew
 import com.zenitech.futar.feature.home.body_right.HomeSettings
 import com.zenitech.futar.feature.home.body_right.HomeStoredSounds
-import com.zenitech.futar.feature.home.header.HomeHeader
-import com.zenitech.futar.feature.home.status_bar.HomeStatusDisplay
+import com.zenitech.futar.ui.common.header.HomeHeader
+import com.zenitech.futar.ui.common.status_bar.HomeStatusDisplay
 import com.zenitech.futar.ui.HomePrimaryOutlinedButton
 import com.zenitech.futar.ui.theme.FutarTheme
 import com.zenitech.futar.ui.theme.LightGrey
 import com.zenitech.futar.ui.theme.MediumPurple
 import com.zenitech.futar.ui.theme.Purple
+import kotlin.math.truncate
 
 
 @Composable
@@ -58,7 +59,7 @@ fun HomeScreen(
 fun HomeContent(isRazziaMode: Boolean = true) {
 
     val selectedButton = remember {
-        mutableStateOf(HomeButton.TEVEKENYSEG)
+        mutableStateOf(HomeButton.UZENETEK)
     }
 
     Column(
@@ -70,7 +71,8 @@ fun HomeContent(isRazziaMode: Boolean = true) {
             modifier = Modifier.weight(1f)
         ) {
             HomeHeader(
-                isRazziaMode = isRazziaMode
+                isRazziaMode = isRazziaMode,
+                isLoggedIn = true
             )
             HomeBody(
                 selectedButton = selectedButton.value,
@@ -85,6 +87,7 @@ fun HomeContent(isRazziaMode: Boolean = true) {
         ) {
             HomeStatusDisplay(
                 modifier = Modifier,
+                text = "Új üzenet érkezett!"
             )
         }
     }
@@ -148,7 +151,9 @@ fun HomeDotPatternBackground() {
         val dotSpacing = 4.dp.toPx()
 
         for (y in 0 until canvasHeight.toInt() step dotSpacing.toInt()) {
-            for (x in 0 until canvasWidth.toInt() step dotSpacing.toInt()) {
+            val xOffset = if ((y / dotSpacing.toInt()) % 2 == 0) 0 else (dotSpacing / 2).toInt()
+
+            for (x in xOffset until canvasWidth.toInt() step dotSpacing.toInt()) {
                 drawCircle(
                     color = MediumPurple.copy(alpha = (canvasHeight - y) / canvasHeight),
                     radius = dotSize / 2,
@@ -158,6 +163,7 @@ fun HomeDotPatternBackground() {
         }
     }
 }
+
 
 @Composable
 fun HomeButtons(
