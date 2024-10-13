@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.zenitech.futar.feature.home.HomeScreen
+import com.zenitech.futar.ui.common.base.BaseScreen
 import com.zenitech.futar.ui.theme.FutarTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
                     Surface(
                         Modifier.padding(innerPadding)
                     ) {
-                        HomeScreen()
+                        BaseScreen()
                     }
                 }
             }

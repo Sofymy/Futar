@@ -28,8 +28,8 @@ import com.zenitech.futar.feature.home.body_right.HomeMessages
 import com.zenitech.futar.feature.home.body_right.HomeMessagesNew
 import com.zenitech.futar.feature.home.body_right.HomeSettings
 import com.zenitech.futar.feature.home.body_right.HomeStoredSounds
-import com.zenitech.futar.feature.home.header.HomeHeader
-import com.zenitech.futar.feature.home.status_bar.HomeStatusDisplay
+import com.zenitech.futar.ui.common.header.HomeHeader
+import com.zenitech.futar.ui.common.status_bar.HomeStatusDisplay
 import com.zenitech.futar.ui.HomePrimaryOutlinedButton
 import com.zenitech.futar.ui.theme.FutarTheme
 import com.zenitech.futar.ui.theme.LightGrey
@@ -58,36 +58,15 @@ fun HomeScreen(
 fun HomeContent(isRazziaMode: Boolean = true) {
 
     val selectedButton = remember {
-        mutableStateOf(HomeButton.TEVEKENYSEG)
+        mutableStateOf(HomeButton.UZENETEK)
     }
 
-    Column(
-        modifier = Modifier
-            .background(Purple)
-            .fillMaxSize(),
-    ) {
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
-            HomeHeader(
-                isRazziaMode = isRazziaMode
-            )
-            HomeBody(
-                selectedButton = selectedButton.value,
-                onSelectedButtonChanged = {
-                    selectedButton.value = it
-                }
-            )
+    HomeBody(
+        selectedButton = selectedButton.value,
+        onSelectedButtonChanged = {
+            selectedButton.value = it
         }
-        Column(
-            modifier = Modifier
-                .background(LightGrey)
-        ) {
-            HomeStatusDisplay(
-                modifier = Modifier,
-            )
-        }
-    }
+    )
 }
 
 
@@ -107,12 +86,10 @@ fun HomeBody(
 ) {
     Box(
         Modifier
-            .background(White.copy(0.96f), RoundedCornerShape(0.dp, 0.dp, 0.dp, 0.dp))
             .clip(
                 RoundedCornerShape(0.dp, 0.dp, 0.dp, 0.dp)
             )
     ) {
-        HomeDotPatternBackground()
         Column {
             HomeButtons(
                 selectedButton = selectedButton
@@ -134,30 +111,6 @@ fun HomeBody(
     }
 }
 
-@Composable
-fun HomeDotPatternBackground() {
-    Canvas(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(.1f)
-    ) {
-        val canvasWidth = size.width
-        val canvasHeight = size.height
-
-        val dotSize = 3.dp.toPx()
-        val dotSpacing = 4.dp.toPx()
-
-        for (y in 0 until canvasHeight.toInt() step dotSpacing.toInt()) {
-            for (x in 0 until canvasWidth.toInt() step dotSpacing.toInt()) {
-                drawCircle(
-                    color = MediumPurple.copy(alpha = (canvasHeight - y) / canvasHeight),
-                    radius = dotSize / 2,
-                    center = Offset(x.toFloat(), y.toFloat())
-                )
-            }
-        }
-    }
-}
 
 @Composable
 fun HomeButtons(

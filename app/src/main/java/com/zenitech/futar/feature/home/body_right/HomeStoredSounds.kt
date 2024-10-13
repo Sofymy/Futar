@@ -43,7 +43,6 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.zenitech.futar.feature.home.header.HomeHeader
 import com.zenitech.futar.ui.simpleVerticalScrollbar
 import com.zenitech.futar.ui.theme.FutarTheme
 import com.zenitech.futar.ui.theme.Purple
