@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.zenitech.futar.feature.boarding.BoardingScreen
 import com.zenitech.futar.feature.home.HomeScreen
 import com.zenitech.futar.feature.boarding.login.LoginScreen
 import com.zenitech.futar.feature.boarding.traffic_number.TrafficNumberScreen
@@ -18,33 +19,15 @@ fun NavGraph(
     onStatusBarChange: (String) -> Unit,
     onLoggedInChange: (Boolean) -> Unit
 ) {
-    NavHost(navController, startDestination = Screen.Welcome) {
+    NavHost(navController, startDestination = Screen.Boarding) {
 
-        composable<Screen.Welcome> {
+        composable<Screen.Boarding> {
 
             onStatusBarChange("Kérem, válasszon felületet!")
-            WelcomeScreen(
-                onNavigateToLoginScreen = {
-                    navController.navigate(Screen.Login)
-                }
-            )
-        }
-
-
-        composable<Screen.Login> {
-
-            onStatusBarChange("Kérem, adja meg az azonosítóját!")
-            LoginScreen(
-                onNavigateToTrafficNumberScreen = {
-                    navController.navigate(Screen.TrafficNumber)
-                }
-            )
-        }
-
-        composable<Screen.TrafficNumber> {
-
-            onStatusBarChange("Kérem, adja meg a forgalmi számot!")
-            TrafficNumberScreen(
+            BoardingScreen(
+                onStatusBarChange = {
+                    onStatusBarChange(it)
+                },
                 onNavigateToHome = {
                     navController.navigate(Screen.Home)
                 }
