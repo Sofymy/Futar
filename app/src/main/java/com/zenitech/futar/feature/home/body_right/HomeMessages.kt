@@ -2,6 +2,7 @@
 
 package com.zenitech.futar.feature.home.body_right
 
+import android.content.res.Configuration
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -70,7 +71,7 @@ import java.util.Locale
 
 
 @Composable
-@Preview(name = "tablet", device = "spec:shape=Normal,width=1280,height=800,unit=dp,dpi=480")
+@Preview(name = "tablet", device = "spec:width=1280dp,height=800dp,dpi=480")
 fun HomeMessagesPreview(){
     FutarTheme {
         HomeMessages {

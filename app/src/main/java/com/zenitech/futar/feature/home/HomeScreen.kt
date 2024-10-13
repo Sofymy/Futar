@@ -20,6 +20,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zenitech.futar.feature.home.body_left.HomeJourney
 import com.zenitech.futar.feature.home.body_right.HomeActivity
+import com.zenitech.futar.feature.home.body_right.HomeBrightness
+import com.zenitech.futar.feature.home.body_right.HomeDataSynchronization
 import com.zenitech.futar.feature.home.body_right.HomeMessages
 import com.zenitech.futar.feature.home.body_right.HomeMessagesNew
 import com.zenitech.futar.feature.home.body_right.HomeSettings
@@ -33,21 +35,33 @@ import com.zenitech.futar.ui.theme.Purple
 @Preview(name = "tablet", device = "spec:shape=Normal,width=1280,height=800,unit=dp,dpi=480")
 fun HomeScreenPreview(){
     FutarTheme {
-        HomeScreen(isRazziaMode = true)
+        HomeScreen(
+            isRazziaMode = true,
+            onBrightnessChange = {  },
+            brightness = 1f
+        )
     }
 }
 
 @Composable
 fun HomeScreen(
-    isRazziaMode: Boolean = true
+    isRazziaMode: Boolean = true,
+    onBrightnessChange: (Float) -> Unit,
+    brightness: Float
 ){
     HomeContent(
-        isRazziaMode = isRazziaMode
+        isRazziaMode = isRazziaMode,
+        onBrightnessChange = onBrightnessChange,
+        brightness = brightness
     )
 }
 
 @Composable
-fun HomeContent(isRazziaMode: Boolean = true) {
+fun HomeContent(
+    isRazziaMode: Boolean = true,
+    onBrightnessChange: (Float) -> Unit,
+    brightness: Float
+) {
 
     val selectedButton = remember {
         mutableStateOf(HomeButton.UZENETEK)
@@ -57,24 +71,34 @@ fun HomeContent(isRazziaMode: Boolean = true) {
         selectedButton = selectedButton.value,
         onSelectedButtonChanged = {
             selectedButton.value = it
-        }
+        },
+        onBrightnessChange = onBrightnessChange,
+        brightness = brightness
     )
 }
 
 
-enum class HomeButton(val text: String, val isMainButton: Boolean) {
+enum class HomeButton(val text: String, val isMainButton: Boolean = false) {
     TEVEKENYSEG("Tevékenység", true),
     TAROLT_HANGOK("Tárolt hangok", true),
     UZENETEK("Üzenetek", true),
-    UZENET_KULDESE("Üzenetek", false),
     BEALLITASOK("Beállítások", true),
+    UZENET_KULDESE("Üzenetek", false),
+    ADAT_SZINKRONIZACIO("Adat szinkronizáció"),
+    FENYERO("Fényerő"),
+    JARMU_ALLAPOT("Jármű állapot"),
+    ESZKOZ_ALLAPOT("Eszköz állapot"),
+    RAZZIA("Razzia"),
+    KIJELZOK("Kijelzők"),
 }
 
 
 @Composable
 fun HomeBody(
     selectedButton: HomeButton,
-    onSelectedButtonChanged: (HomeButton) -> Unit
+    onSelectedButtonChanged: (HomeButton) -> Unit,
+    brightness: Float,
+    onBrightnessChange: (Float) -> Unit
 ) {
     Box(
         Modifier
@@ -96,7 +120,15 @@ fun HomeBody(
                     selectedButton = selectedButton,
                     onNavigateToCreateMessage = {
                         onSelectedButtonChanged(HomeButton.UZENET_KULDESE)
-                    }
+                    },
+                    onNavigateToDataSynchronization = {
+                        onSelectedButtonChanged(HomeButton.ADAT_SZINKRONIZACIO)
+                    },
+                    onNavigateToBrightness = {
+                        onSelectedButtonChanged(HomeButton.FENYERO)
+                    },
+                    onBrightnessChange = onBrightnessChange,
+                    brightness = brightness
                 )
             }
         }
@@ -122,7 +154,11 @@ fun HomeButtons(
 fun HomeSelectedButtonContent(
     modifier: Modifier = Modifier,
     selectedButton: HomeButton,
-    onNavigateToCreateMessage: () -> Unit
+    onNavigateToCreateMessage: () -> Unit,
+    onNavigateToDataSynchronization: () -> Unit,
+    onNavigateToBrightness: () -> Unit,
+    onBrightnessChange: (Float) -> Unit,
+    brightness: Float
 ) {
     Column {
         Column(
@@ -147,11 +183,36 @@ fun HomeSelectedButtonContent(
                     HomeStoredSounds()
                 }
                 HomeButton.BEALLITASOK -> {
-                    HomeSettings()
+                    HomeSettings(
+                        onNavigateToDataSynchronization = onNavigateToDataSynchronization,
+                        onNavigateToBrightness = onNavigateToBrightness
+                    )
                 }
 
                 HomeButton.UZENET_KULDESE -> {
                     HomeMessagesNew()
+                }
+
+                HomeButton.ADAT_SZINKRONIZACIO -> {
+                    HomeDataSynchronization()
+                }
+                HomeButton.FENYERO -> {
+                    HomeBrightness(
+                        onBrightnessChange = onBrightnessChange,
+                        brightness = brightness
+                    )
+                }
+                HomeButton.JARMU_ALLAPOT -> {
+
+                }
+                HomeButton.ESZKOZ_ALLAPOT -> {
+
+                }
+                HomeButton.RAZZIA -> {
+
+                }
+                HomeButton.KIJELZOK -> {
+
                 }
             }
         }

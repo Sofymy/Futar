@@ -80,10 +80,11 @@ fun HomePrimaryOutlinedButton(
 @Composable
 fun HomeSecondaryButton(
     modifier: Modifier = Modifier,
-    text: @Composable () -> Unit
+    onClick: () -> Unit,
+    text: @Composable () -> Unit,
 ) {
     Button(
-        onClick = { },
+        onClick = onClick,
         modifier = modifier.border(1.dp, Purple.copy(.2f), RoundedCornerShape(20.dp)),
         shape = RoundedCornerShape(20.dp),
         colors = ButtonDefaults.buttonColors(containerColor = LightPurple)

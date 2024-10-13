@@ -99,7 +99,8 @@ fun HomeActivityPrimaryButton(
     modifier: Modifier = Modifier
 ) {
     HomeSecondaryButton(
-        modifier = modifier
+        modifier = modifier,
+        onClick = {}
     ) {
         Text(text, color = Purple, fontSize = 20.sp)
     }
@@ -110,6 +111,7 @@ fun HomeActivityLogoutButton(
     modifier: Modifier = Modifier
 ) {
     HomeSecondaryButton(
+        onClick = {},
         modifier = modifier
             .fillMaxWidth()
     ) {

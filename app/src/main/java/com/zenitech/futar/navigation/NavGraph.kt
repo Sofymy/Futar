@@ -7,9 +7,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.zenitech.futar.feature.boarding.BoardingScreen
 import com.zenitech.futar.feature.home.HomeScreen
-import com.zenitech.futar.feature.boarding.login.LoginScreen
-import com.zenitech.futar.feature.boarding.traffic_number.TrafficNumberScreen
-import com.zenitech.futar.feature.boarding.welcome.WelcomeScreen
 
 
 @ExperimentalMaterial3Api
@@ -17,7 +14,9 @@ import com.zenitech.futar.feature.boarding.welcome.WelcomeScreen
 fun NavGraph(
     navController: NavHostController,
     onStatusBarChange: (String) -> Unit,
-    onLoggedInChange: (Boolean) -> Unit
+    onLoggedInChange: (Boolean) -> Unit,
+    brightness: Float,
+    onBrightnessChange: (Float) -> Unit
 ) {
     NavHost(navController, startDestination = Screen.Boarding) {
 
@@ -38,7 +37,10 @@ fun NavGraph(
 
             onLoggedInChange(true)
             onStatusBarChange("Új üzenet érkezett!")
-            HomeScreen()
+            HomeScreen(
+                onBrightnessChange = onBrightnessChange,
+                brightness = brightness
+            )
         }
 
     }

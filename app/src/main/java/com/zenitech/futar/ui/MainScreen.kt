@@ -9,10 +9,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
@@ -38,33 +42,42 @@ fun MainScreen() {
     val isLoggedIn = remember {
         mutableStateOf(false)
     }
+    var brightness by remember { mutableFloatStateOf(1f) }
 
-    Column(
-        Modifier
-            .background(BackgroundLightPurple)
-            .fillMaxSize()
-    ) {
-        HomeHeader(
-            isLoggedIn = isLoggedIn.value
-        )
-        Box(
-            Modifier.weight(1f)
+    Box(){
+        Column(
+            Modifier
+                .background(BackgroundLightPurple)
+                .fillMaxSize()
         ) {
-            DotPatternBackground()
-            NavGraph(
-                navController = navController,
-                onStatusBarChange = {
-                    statusBarText.value = it
-                },
-                onLoggedInChange = {
-                    isLoggedIn.value = it
-                }
+            HomeHeader(
+                isLoggedIn = isLoggedIn.value
+            )
+            Box(
+                Modifier.weight(1f)
+            ) {
+                DotPatternBackground()
+                NavGraph(
+                    navController = navController,
+                    onStatusBarChange = {
+                        statusBarText.value = it
+                    },
+                    onLoggedInChange = {
+                        isLoggedIn.value = it
+                    },
+                    brightness = brightness,
+                    onBrightnessChange = {
+                        brightness = it
+                    }
+                )
+            }
+            HomeStatusDisplay(
+                modifier = Modifier,
+                text = statusBarText.value
             )
         }
-        HomeStatusDisplay(
-            modifier = Modifier,
-            text = statusBarText.value
-        )
+        Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 1 - brightness)))
+
     }
 }
 

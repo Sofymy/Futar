@@ -26,12 +26,16 @@ import com.zenitech.futar.ui.theme.Purple
 @Preview(name = "tablet", device = "spec:shape=Normal,width=1280,height=800,unit=dp,dpi=480")
 fun HomeSettingsPreview(){
     FutarTheme {
-        HomeSettings()
+        HomeSettings(onNavigateToDataSynchronization = {}){}
     }
 }
 
+
 @Composable
-fun HomeSettings() {
+fun HomeSettings(
+    onNavigateToDataSynchronization: () -> Unit,
+    onNavigateToBrightness: () -> Unit
+) {
     val state = rememberLazyListState()
     LazyColumn(
         modifier = Modifier.simpleVerticalScrollbar(state).fillMaxSize(),
@@ -46,7 +50,9 @@ fun HomeSettings() {
         item {
             HomeSettingsButtonRow(
                 button1Text = "Adat szinkronizáció",
-                button2Text = "Fényerő"
+                button2Text = "Fényerő",
+                onClickButton1 = onNavigateToDataSynchronization,
+                onClickButton2 = onNavigateToBrightness
             )
         }
         item {
@@ -55,7 +61,9 @@ fun HomeSettings() {
         item {
             HomeSettingsButtonRow(
                 button1Text = "Jármű állapot",
-                button2Text = "Eszköz állapot"
+                button2Text = "Eszköz állapot",
+                onClickButton2 = {},
+                onClickButton1 = {}
             )
         }
         item {
@@ -64,7 +72,9 @@ fun HomeSettings() {
         item {
             HomeSettingsButtonRow(
                 button1Text = "Razzia",
-                button2Text = "Kijelzők"
+                button2Text = "Kijelzők",
+                onClickButton2 = {},
+                onClickButton1 = {}
             )
         }
         item { Spacer(modifier = Modifier.height(80.dp)) }
@@ -80,15 +90,20 @@ fun HomeSettingsVersionInfo() {
 }
 
 @Composable
-fun HomeSettingsButtonRow(button1Text: String, button2Text: String) {
+fun HomeSettingsButtonRow(
+    button1Text: String,
+    button2Text: String,
+    onClickButton2: () -> Unit,
+    onClickButton1: () -> Unit
+) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(20.dp),
         modifier = Modifier.padding(horizontal = 20.dp)
     ) {
-        HomeSecondaryButton(modifier = Modifier.weight(1f)) {
+        HomeSecondaryButton(modifier = Modifier.weight(1f), onClick = onClickButton1) {
             Text(button1Text, color = Purple, fontSize = 20.sp)
         }
-        HomeSecondaryButton(modifier = Modifier.weight(1f)) {
+        HomeSecondaryButton(modifier = Modifier.weight(1f), onClick = onClickButton2) {
             Text(button2Text, color = Purple, fontSize = 20.sp)
         }
     }
