@@ -12,9 +12,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
@@ -42,7 +47,7 @@ import com.zenitech.futar.ui.theme.Purple
 @Preview(name = "tablet", device = "spec:shape=Normal,width=1280,height=800,unit=dp,dpi=480")
 @Composable
 fun HomeBrightnessPreview(){
-    HomeBrightness({  }, .4f)
+    HomeBrightness({  }, 1f)
 }
 
 @Composable
@@ -98,7 +103,10 @@ fun HomeBrightnessContent(
                 Slider(
                     thumb = {
                         Box(
-                            Modifier.border(3.dp, Purple, CircleShape).background(Purple.copy(.4f), CircleShape).padding(20.dp)
+                            Modifier
+                                .border(3.dp, Purple, CircleShape)
+                                .background(Purple.copy(.4f), CircleShape)
+                                .padding(20.dp)
                         ){
                             SliderDefaults.Thumb(
                                 modifier = Modifier,
@@ -115,7 +123,7 @@ fun HomeBrightnessContent(
                     ),
                     value = brightness,
                     onValueChange = { onBrightnessChange(it) },
-                    valueRange = 0.4f..1f,
+                    valueRange = 0.3f..1f,
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
@@ -128,12 +136,20 @@ fun HomeBrightnessContent(
                     .fillMaxWidth()
                     .padding(20.dp)
             ) {
-                HomeSecondaryButton(onClick = { onBrightnessChange(0.4f) }) {
-                    Text(text = "Dark", color = Purple, fontSize = 20.sp)
+                HomeSecondaryButton(onClick = { onBrightnessChange(0.3f) }) {
+                    Row {
+                        Icon(imageVector = Icons.Default.DarkMode, contentDescription = null, tint = Purple)
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Text(text = "Sötét", color = Purple, fontSize = 20.sp)
+                    }
                 }
 
                 HomeSecondaryButton(onClick = { onBrightnessChange(1f) }) {
-                    Text(text = "Light", color = Purple, fontSize = 20.sp)
+                    Row {
+                        Icon(imageVector = Icons.Default.LightMode, contentDescription = null, tint = Purple)
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Text(text = "Világos", color = Purple, fontSize = 20.sp)
+                    }
                 }
             }
         }
