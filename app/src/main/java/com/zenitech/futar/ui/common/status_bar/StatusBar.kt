@@ -1,6 +1,7 @@
 package com.zenitech.futar.ui.common.status_bar
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
@@ -23,16 +24,19 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.zenitech.futar.ui.theme.AlertBackgroundRed
 import com.zenitech.futar.ui.theme.AlertRed
 import com.zenitech.futar.ui.theme.FutarTheme
 import com.zenitech.futar.ui.theme.Green
@@ -45,7 +49,7 @@ fun HomeStatusDisplayPreview(){
     FutarTheme {
         HomeStatusDisplay(
             modifier = Modifier,
-            text =  "Text text text"
+            text =  "Text text text",
         )
     }
 }
@@ -54,18 +58,15 @@ fun HomeStatusDisplayPreview(){
 @Composable
 fun HomeStatusDisplay(
     modifier: Modifier,
-    text: String
+    text: String,
 ) {
-    val showConnectionData = remember {
-        mutableStateOf(false)
-    }
+    val showConnectionData = remember { mutableStateOf(false) }
 
     Box(
         modifier
             .fillMaxWidth()
             .border(1.dp, Purple.copy(.2f))
-            .background(Purple)
-        ,
+            .background(Purple),
     ) {
         Row(
             Modifier
@@ -74,9 +75,15 @@ fun HomeStatusDisplay(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            repeat(4){
+            repeat(4) {
                 Spacer(modifier = Modifier.width(100.dp))
-                Text(text = text, fontSize = 20.sp, color = White, fontWeight = FontWeight.Bold, modifier = Modifier)
+                Text(
+                    text = text,
+                    fontSize = 20.sp,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                )
                 Spacer(modifier = Modifier.width(100.dp))
             }
         }
@@ -93,9 +100,7 @@ fun HomeStatusDisplay(
             VerticalDivider(Modifier.height(30.dp), color = MediumPurple)
             Spacer(modifier = Modifier.width(20.dp))
             Row {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     HomeSatelliteStatusIcon(isActive = true)
                     AnimatedVisibility(visible = showConnectionData.value) {
                         Row {
@@ -105,9 +110,7 @@ fun HomeStatusDisplay(
                     }
                 }
                 Spacer(modifier = Modifier.width(20.dp))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     HomeDataConnectionStatusIcon(isActive = false)
 
                     AnimatedVisibility(visible = showConnectionData.value) {
@@ -120,8 +123,8 @@ fun HomeStatusDisplay(
             }
         }
     }
-
 }
+
 
 
 @Composable

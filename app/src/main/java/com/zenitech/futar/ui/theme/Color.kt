@@ -14,6 +14,8 @@ val Purple = Color(0xFF4C0E5E)
 val MediumPurple = Color(0xFF9B79A5)
 val LightMediumPurple = Color(0xffe8dfeb)
 val LightPurple = Color(0xFFEEE8F0)
+val BackgroundLightPurple = Color(0xFFF7F3F8)
+
 
 
 val Blue = Color(0xFF3C8E83)
