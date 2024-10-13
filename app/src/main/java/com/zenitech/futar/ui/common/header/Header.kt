@@ -34,7 +34,7 @@ import java.time.format.DateTimeFormatter
 @Preview(name = "tablet", device = "spec:shape=Normal,width=1280,height=800,unit=dp,dpi=480")
 fun HomeHeaderPreview(){
     FutarTheme {
-        HomeHeader(isRazziaMode = true, isLoggedIn = false)
+        HomeHeader(isRazziaMode = true, isLoggedIn = true)
     }
 }
 
@@ -144,11 +144,18 @@ fun HomeHeaderNumberOfShift(
         modifier.padding(start = 0.dp, top = 30.dp)
     ) {
         Text(
-            text = "Forgalmi szám: 19980828",
+            text = "Felhasználó: 12345",
             color = White,
             fontSize = 20.sp
         )
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Forgalmi szám: 11111111",
+            color = White,
+            fontSize = 20.sp
+        )
+        Spacer(modifier = Modifier.height(8.dp))
 
         Row {
             Icon(imageVector = Icons.Default.SevereCold, contentDescription = null, tint = LightPurple)

@@ -35,7 +35,6 @@ import com.zenitech.futar.ui.theme.FutarTheme
 import com.zenitech.futar.ui.theme.LightGrey
 import com.zenitech.futar.ui.theme.MediumPurple
 import com.zenitech.futar.ui.theme.Purple
-import kotlin.math.truncate
 
 
 @Composable
@@ -62,35 +61,12 @@ fun HomeContent(isRazziaMode: Boolean = true) {
         mutableStateOf(HomeButton.UZENETEK)
     }
 
-    Column(
-        modifier = Modifier
-            .background(Purple)
-            .fillMaxSize(),
-    ) {
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
-            HomeHeader(
-                isRazziaMode = isRazziaMode,
-                isLoggedIn = true
-            )
-            HomeBody(
-                selectedButton = selectedButton.value,
-                onSelectedButtonChanged = {
-                    selectedButton.value = it
-                }
-            )
+    HomeBody(
+        selectedButton = selectedButton.value,
+        onSelectedButtonChanged = {
+            selectedButton.value = it
         }
-        Column(
-            modifier = Modifier
-                .background(LightGrey)
-        ) {
-            HomeStatusDisplay(
-                modifier = Modifier,
-                text = "Új üzenet érkezett!"
-            )
-        }
-    }
+    )
 }
 
 
@@ -110,12 +86,10 @@ fun HomeBody(
 ) {
     Box(
         Modifier
-            .background(White.copy(0.96f), RoundedCornerShape(0.dp, 0.dp, 0.dp, 0.dp))
             .clip(
                 RoundedCornerShape(0.dp, 0.dp, 0.dp, 0.dp)
             )
     ) {
-        HomeDotPatternBackground()
         Column {
             HomeButtons(
                 selectedButton = selectedButton
@@ -131,33 +105,6 @@ fun HomeBody(
                     onNavigateToCreateMessage = {
                         onSelectedButtonChanged(HomeButton.UZENET_KULDESE)
                     }
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun HomeDotPatternBackground() {
-    Canvas(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(.1f)
-    ) {
-        val canvasWidth = size.width
-        val canvasHeight = size.height
-
-        val dotSize = 3.dp.toPx()
-        val dotSpacing = 4.dp.toPx()
-
-        for (y in 0 until canvasHeight.toInt() step dotSpacing.toInt()) {
-            val xOffset = if ((y / dotSpacing.toInt()) % 2 == 0) 0 else (dotSpacing / 2).toInt()
-
-            for (x in xOffset until canvasWidth.toInt() step dotSpacing.toInt()) {
-                drawCircle(
-                    color = MediumPurple.copy(alpha = (canvasHeight - y) / canvasHeight),
-                    radius = dotSize / 2,
-                    center = Offset(x.toFloat(), y.toFloat())
                 )
             }
         }
