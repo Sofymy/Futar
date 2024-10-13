@@ -1,4 +1,4 @@
-package com.zenitech.futar.ui.common.header
+package com.zenitech.futar.ui.common
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background

@@ -1,14 +1,11 @@
 package com.zenitech.futar.feature.home
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -18,7 +15,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,12 +24,8 @@ import com.zenitech.futar.feature.home.body_right.HomeMessages
 import com.zenitech.futar.feature.home.body_right.HomeMessagesNew
 import com.zenitech.futar.feature.home.body_right.HomeSettings
 import com.zenitech.futar.feature.home.body_right.HomeStoredSounds
-import com.zenitech.futar.ui.common.header.HomeHeader
-import com.zenitech.futar.ui.common.status_bar.HomeStatusDisplay
 import com.zenitech.futar.ui.HomePrimaryOutlinedButton
 import com.zenitech.futar.ui.theme.FutarTheme
-import com.zenitech.futar.ui.theme.LightGrey
-import com.zenitech.futar.ui.theme.MediumPurple
 import com.zenitech.futar.ui.theme.Purple
 
 

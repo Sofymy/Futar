@@ -34,7 +34,9 @@ fun TrafficNumberScreenPreview() {
 }
 
 @Composable
-fun TrafficNumberScreen(onNavigateToHome: () -> Unit) {
+fun TrafficNumberScreen(
+    onNavigateToHome: () -> Unit
+) {
     var trafficNumber by remember { mutableStateOf("") }
     val isTrafficNumberCorrect = remember { mutableStateOf(false) }
 
@@ -57,7 +59,8 @@ fun TrafficNumberScreen(onNavigateToHome: () -> Unit) {
             number = trafficNumber,
             onNumberChange = { newNumber -> trafficNumber = newNumber },
             isNumberCorrect = isTrafficNumberCorrect.value,
-            maxNumber = 8
+            maxNumber = 8,
+            errorMessage = "Hibás forgalmi szám!"
         )
     }
 }
@@ -87,9 +90,18 @@ fun Instruction(text: String) {
 }
 
 @Composable
-fun EnteredInput(modifier: Modifier = Modifier, number: String, isNumberCorrect: Boolean, maxNumber: Int) {
-    val inputBackground = animateColorAsState(if (isNumberCorrect || number.length < maxNumber) Color.White else AlertBackgroundRed)
-    val inputColor = animateColorAsState(if (isNumberCorrect || number.length < maxNumber) Purple else AlertRed)
+fun EnteredInput(
+    modifier: Modifier = Modifier,
+    number: String,
+    isNumberCorrect: Boolean,
+    maxNumber: Int
+) {
+    val inputBackground = animateColorAsState(if (isNumberCorrect || number.length < maxNumber) Color.White else AlertBackgroundRed,
+        label = ""
+    )
+    val inputColor = animateColorAsState(if (isNumberCorrect || number.length < maxNumber) Purple else AlertRed,
+        label = ""
+    )
 
     Column(
         modifier = modifier
@@ -113,7 +125,8 @@ fun NumberInput(
     number: String,
     onNumberChange: (String) -> Unit,
     isNumberCorrect: Boolean,
-    maxNumber: Int
+    maxNumber: Int,
+    errorMessage: String
 ) {
     Column(
         modifier = modifier.padding(20.dp).fillMaxSize(),
@@ -121,8 +134,8 @@ fun NumberInput(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(Modifier.fillMaxHeight()) {
-            InputDisplay(modifier = Modifier.weight(1.2f), number, isNumberCorrect, maxNumber)
-            InputButtons(modifier = Modifier.weight(1f), number, onNumberChange)
+            InputDisplay(modifier = Modifier.weight(1.2f), number, isNumberCorrect, maxNumber, errorMessage)
+            InputButtons(modifier = Modifier.weight(1f), number, onNumberChange, maxNumber)
         }
     }
 }
@@ -133,17 +146,23 @@ fun InputDisplay(
     number: String,
     isNumberCorrect: Boolean,
     maxNumber: Int,
+    errorMessage: String
 ) {
     Column(modifier = modifier.padding(end = 20.dp).clip(RoundedCornerShape(10.dp))) {
         EnteredInput(modifier = Modifier.weight(0.25f).fillMaxWidth().padding(bottom = 16.dp), number, isNumberCorrect, maxNumber)
-        Result(modifier = Modifier.weight(0.75f, true), isError = !isNumberCorrect && number.length == maxNumber)
+        Result(modifier = Modifier.weight(0.75f, true), isError = !isNumberCorrect && number.length == maxNumber, errorMessage = errorMessage)
     }
 }
 
 @Composable
-fun InputButtons(modifier: Modifier, number: String, onNumberChange: (String) -> Unit) {
+fun InputButtons(
+    modifier: Modifier,
+    number: String,
+    onNumberChange: (String) -> Unit,
+    maxNumber: Int
+) {
     fun handleNumberClick(newNumber: String) {
-        if (number.length < 8) {
+        if (number.length < maxNumber) {
             onNumberChange(number + newNumber)
         }
     }
@@ -184,11 +203,11 @@ fun NumberButtonRow(
 }
 
 @Composable
-fun Result(modifier: Modifier, isError: Boolean) {
+fun Result(modifier: Modifier, isError: Boolean, errorMessage: String) {
     Column(modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         AnimatedVisibility(visible = isError) {
             Text(
-                text = "Hibás azonosító!",
+                text = errorMessage,
                 color = AlertRed,
                 fontWeight = FontWeight.Bold,
                 fontSize = 25.sp,
@@ -199,12 +218,18 @@ fun Result(modifier: Modifier, isError: Boolean) {
 }
 
 @Composable
-fun NumberButton(number: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun NumberButton(
+    number: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
 
-    val backgroundColor = animateColorAsState(if (isPressed) Purple else Color.White)
-    val contentColor = animateColorAsState(if (isPressed) Color.White else Purple)
+    val backgroundColor = animateColorAsState(if (isPressed) Purple else Color.White, label = "")
+    val contentColor = animateColorAsState(targetValue = if (isPressed) Color.White else Purple,
+        label = ""
+    )
 
     Box(
         modifier = modifier

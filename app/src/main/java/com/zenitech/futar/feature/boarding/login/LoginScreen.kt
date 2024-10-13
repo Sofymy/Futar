@@ -58,7 +58,8 @@ fun LoginScreen(
                     newNumber -> identifier = newNumber
                              },
             isNumberCorrect = isIdentifierCorrect.value,
-            maxNumber = 5
+            maxNumber = 5,
+            errorMessage = "Hibás azonosító!"
         )
     }
 }

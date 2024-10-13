@@ -1,4 +1,4 @@
-package com.zenitech.futar.ui.common.base
+package com.zenitech.futar.ui
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -17,21 +17,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import com.zenitech.futar.navigation.NavGraph
-import com.zenitech.futar.ui.common.header.HomeHeader
-import com.zenitech.futar.ui.common.status_bar.HomeStatusDisplay
+import com.zenitech.futar.ui.common.HomeHeader
+import com.zenitech.futar.ui.common.HomeStatusDisplay
 import com.zenitech.futar.ui.theme.BackgroundLightPurple
-import com.zenitech.futar.ui.theme.LightMediumPurple
 import com.zenitech.futar.ui.theme.MediumPurple
 
 @Preview(name = "tablet", device = "spec:shape=Normal,width=1280,height=800,unit=dp,dpi=480")
 @Composable
-fun BaseScreenPreview() {
-    BaseScreen()
+fun MainScreenPreview() {
+    MainScreen()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BaseScreen() {
+fun MainScreen() {
     val navController = rememberNavController()
     val statusBarText = remember {
         mutableStateOf("")
