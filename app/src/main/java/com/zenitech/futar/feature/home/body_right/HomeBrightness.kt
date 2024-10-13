@@ -35,12 +35,14 @@ import androidx.compose.ui.unit.sp
 import com.zenitech.futar.ui.HomeSecondaryButton
 import com.zenitech.futar.ui.theme.BusBlue
 import com.zenitech.futar.ui.theme.BusDarkBlue
+import com.zenitech.futar.ui.theme.LightPurple
+import com.zenitech.futar.ui.theme.MediumPurple
 import com.zenitech.futar.ui.theme.Purple
 
 @Preview(name = "tablet", device = "spec:shape=Normal,width=1280,height=800,unit=dp,dpi=480")
 @Composable
 fun HomeBrightnessPreview(){
-    HomeBrightness({  }, 1f)
+    HomeBrightness({  }, .4f)
 }
 
 @Composable
@@ -79,15 +81,15 @@ fun HomeBrightnessContent(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
+                    .padding(horizontal = 20.dp)
             ) {
                 val gradientBrush = Brush.horizontalGradient(
-                    colors = listOf(BusBlue, Color.White)
+                    colors = listOf(Purple, Color.White)
                 )
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(20.dp)
+                        .height(10.dp)
                         .border(1.dp, Purple.copy(0.3f), CircleShape)
                         .background(gradientBrush, CircleShape)
                         .align(Alignment.Center)
@@ -95,14 +97,19 @@ fun HomeBrightnessContent(
 
                 Slider(
                     thumb = {
-                        SliderDefaults.Thumb(
-                            interactionSource = remember { MutableInteractionSource() },
-                            colors = SliderDefaults.colors(thumbColor = BusDarkBlue),
-                            thumbSize = DpSize(width = 60.dp, height = 60.dp)
-                        )
+                        Box(
+                            Modifier.border(3.dp, Purple, CircleShape).background(Purple.copy(.4f), CircleShape).padding(20.dp)
+                        ){
+                            SliderDefaults.Thumb(
+                                modifier = Modifier,
+                                interactionSource = remember { MutableInteractionSource() },
+                                colors = SliderDefaults.colors(thumbColor = Purple),
+                                thumbSize = DpSize(width = 20.dp, height = 20.dp)
+                            )
+                        }
                     },
                     colors = SliderDefaults.colors(
-                        thumbColor = BusDarkBlue,
+                        thumbColor = MediumPurple,
                         activeTrackColor = Color.Transparent,
                         inactiveTrackColor = Color.Transparent
                     ),
@@ -113,7 +120,7 @@ fun HomeBrightnessContent(
                 )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(15.dp))
 
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -122,11 +129,11 @@ fun HomeBrightnessContent(
                     .padding(20.dp)
             ) {
                 HomeSecondaryButton(onClick = { onBrightnessChange(0.4f) }) {
-                    Text(text = "Dark", color = Purple)
+                    Text(text = "Dark", color = Purple, fontSize = 20.sp)
                 }
 
                 HomeSecondaryButton(onClick = { onBrightnessChange(1f) }) {
-                    Text(text = "Light", color = Purple)
+                    Text(text = "Light", color = Purple, fontSize = 20.sp)
                 }
             }
         }
