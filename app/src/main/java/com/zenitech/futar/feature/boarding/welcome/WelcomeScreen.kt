@@ -73,7 +73,7 @@ fun WelcomeScreen(
             verticalArrangement = Arrangement.Center
         ) {
             WelcomeButton(text = "Járművezetői mód", Modifier.fillMaxWidth(), onClick = onNavigateToLoginScreen)
-            Spacer(modifier = Modifier.height(50.dp))
+            Spacer(modifier = Modifier.height(30.dp))
             WelcomeButton(text = "Karbantartás", Modifier.fillMaxWidth(), onClick = {})
         }
     }

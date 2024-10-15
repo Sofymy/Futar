@@ -10,6 +10,8 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardBackspace
+import androidx.compose.material.icons.filled.KeyboardBackspace
 import androidx.compose.material.icons.filled.SubdirectoryArrowLeft
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -203,7 +205,11 @@ fun NumberButtonRow(
 }
 
 @Composable
-fun Result(modifier: Modifier, isError: Boolean, errorMessage: String) {
+fun Result(
+    modifier: Modifier,
+    isError: Boolean,
+    errorMessage: String
+) {
     Column(modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         AnimatedVisibility(visible = isError) {
             Text(
@@ -242,7 +248,7 @@ fun NumberButton(
         contentAlignment = Alignment.Center
     ) {
         if (number == "Back") {
-            Icon(imageVector = Icons.Default.SubdirectoryArrowLeft, contentDescription = null, tint = Purple, modifier = Modifier.fillMaxSize().padding(20.dp))
+            Icon(imageVector = Icons.AutoMirrored.Filled.KeyboardBackspace, contentDescription = null, tint = Purple, modifier = Modifier.fillMaxSize().padding(20.dp))
         } else {
             Text(text = number, color = contentColor.value, fontSize = 40.sp, textAlign = TextAlign.Center)
         }

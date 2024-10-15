@@ -43,6 +43,7 @@ import com.zenitech.futar.ui.theme.FutarTheme
 import com.zenitech.futar.ui.theme.Green
 import com.zenitech.futar.ui.theme.LightPurple
 import com.zenitech.futar.ui.theme.Purple
+import com.zenitech.futar.ui.theme.TicketYellow
 
 
 @Composable
@@ -98,6 +99,7 @@ data class Station(
     val time: String,
     val isArrived: Boolean,
     val isTerminus: Boolean = false,
+    val isFirstStation: Boolean = false,
     val isNext: Boolean = false
 )
 
@@ -112,7 +114,6 @@ fun HomeJourneyStationsVerticalProgressLine() {
         Station(name = "Nagytétényi út", time = "18:26", isArrived = true),
         Station(name = "Kossuth Lajos utca", time = "18:23", isArrived = true),
         Station(name = "Leányka utca", time = "18:20", isArrived = true),
-        Station(name = "felüljáró", time = "18:17", isArrived = true),
         Station(name = "Kitérő út", time = "18:14", isArrived = true),
         Station(name = "Hunyadi János út", time = "18:11", isArrived = true),
         Station(name = "Budafoki út", time = "18:08", isArrived = true),
@@ -128,9 +129,9 @@ fun HomeJourneyStationsVerticalProgressLine() {
         Station(name = "Bosnyák tér", time = "17:38", isArrived = true),
         Station(name = "Csömöri út", time = "17:35", isArrived = true),
         Station(name = "felüljáró", time = "17:32", isArrived = true),
-        Station(name = "Drégelyvár utca", time = "17:29", isArrived = false),
-        Station(name = "Nyírpalota út", time = "17:26", isArrived = false),
-        Station(name = "Újpalota, Nyírpalota út vá.", time = "17:23", isArrived = false)
+        Station(name = "Drégelyvár utca", time = "17:29", isArrived = true),
+        Station(name = "Nyírpalota út", time = "17:26", isArrived = true),
+        Station(name = "Újpalota, Nyírpalota út vá.", time = "17:23", isArrived = true, isFirstStation = true)
     )
 
     HomeJourneyVerticalProgressLine(stations)
@@ -176,7 +177,7 @@ fun HomeJourneyLine(station: Station) {
             .padding(horizontal = 80.dp)
     ) {
         HomeJourneyStationInfo(station, stationBoxSize)
-        HomeJourneyDrawLine(station)
+        if(!station.isFirstStation) HomeJourneyDrawLine(station)
     }
 }
 
@@ -203,7 +204,16 @@ fun HomeJourneyStationIcon(station: Station, stationBoxSize: Dp) {
                 .padding(5.dp)
                 .background(Green, CircleShape)
         )
-    } else {
+    }
+    else if(station.isFirstStation){
+        Box(
+            Modifier
+                .border(5.dp, TicketYellow.copy(.3f), CircleShape)
+                .size(stationBoxSize)
+                .background(TicketYellow, CircleShape)
+        )
+    }
+    else {
         Box(
             modifier = Modifier
                 .border(5.dp, Purple, CircleShape)
@@ -231,9 +241,9 @@ fun HomeJourneyStationDetails(station: Station) {
                 Text(
                     text = "+ 3",
                     modifier = Modifier
-                        .background(AlertBackgroundRed, RoundedCornerShape(5.dp))
-                        .padding(3.dp),
-                    color = AlertRed,
+                        .background(AlertRed, RoundedCornerShape(5.dp))
+                        .padding(horizontal = 5.dp, vertical = 2.dp),
+                    color = AlertBackgroundRed,
                     fontWeight = FontWeight.Bold
                 )
             }

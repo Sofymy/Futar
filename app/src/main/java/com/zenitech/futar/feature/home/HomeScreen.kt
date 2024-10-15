@@ -84,12 +84,12 @@ enum class HomeButton(val text: String, val isMainButton: Boolean = false) {
     UZENETEK("Üzenetek", true),
     BEALLITASOK("Beállítások", true),
     UZENET_KULDESE("Üzenetek", false),
-    ADAT_SZINKRONIZACIO("Adat szinkronizáció"),
-    FENYERO("Fényerő"),
-    JARMU_ALLAPOT("Jármű állapot"),
-    ESZKOZ_ALLAPOT("Eszköz állapot"),
-    RAZZIA("Razzia"),
-    KIJELZOK("Kijelzők"),
+    ADAT_SZINKRONIZACIO("Beállítások"),
+    FENYERO("Beállítások"),
+    JARMU_ALLAPOT("Beállítások"),
+    ESZKOZ_ALLAPOT("Beállítások"),
+    RAZZIA("Beállítások"),
+    KIJELZOK("Beállítások"),
 }
 
 

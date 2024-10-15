@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsBus
+import androidx.compose.material.icons.filled.Hexagon
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.SevereCold
 import androidx.compose.material.icons.rounded.Close
@@ -17,18 +18,33 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.geometry.center
+import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.DarkGray
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.graphics.shapes.RoundedPolygon
+import androidx.graphics.shapes.toPath
 import com.zenitech.futar.ui.theme.*
 import kotlinx.coroutines.delay
+import java.lang.Float.max
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import java.util.*
+import kotlin.math.cos
+import kotlin.math.sin
 
 @Composable
 @Preview(name = "tablet", device = "spec:shape=Normal,width=1280,height=800,unit=dp,dpi=480")
@@ -39,7 +55,11 @@ fun HomeHeaderPreview(){
 }
 
 @Composable
-fun HomeHeader(isRazziaMode: Boolean = true, isLoggedIn: Boolean) {
+fun HomeHeader(
+    isRazziaMode: Boolean = true,
+    isStopPressed: Boolean = true,
+    isLoggedIn: Boolean
+) {
     Row(
         modifier = Modifier
             .background(Purple)
@@ -65,12 +85,88 @@ fun HomeHeader(isRazziaMode: Boolean = true, isLoggedIn: Boolean) {
             verticalAlignment = Alignment.Top
         ) {
             if(isLoggedIn){
+                if(isStopPressed) HomeStopPressed(modifier = Modifier.fillMaxHeight())
                 if(isRazziaMode) HomeHeaderHandrail(modifier = Modifier.fillMaxHeight())
                 HomeHeaderDelayOrHurry(modifier = Modifier.fillMaxHeight())
-                Spacer(modifier = Modifier.width(30.dp))
+                Spacer(modifier = Modifier.width(20.dp))
             }
             HomeHeaderDateAndTime(modifier = Modifier.fillMaxHeight())
         }
+    }
+}
+
+@Composable
+fun HomeStopPressed(
+    modifier: Modifier
+) {
+    Box(
+        modifier = modifier
+            .padding(top = 20.dp, end = 20.dp)
+            .aspectRatio(1f)
+            .background(
+                White.copy(.2f),
+                RoundedCornerShape(20.dp)
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            Modifier
+                .rotate(20f)
+                .padding(10.dp)
+                .drawWithCache {
+                    val roundedPolygonRed = RoundedPolygon(
+                        numVertices = 8,
+                        radius = size.minDimension / 2.5f,
+                        centerX = size.width / 2,
+                        centerY = size.height / 2
+                    )
+                    val roundedPolygonWhite = RoundedPolygon(
+                        numVertices = 8,
+                        radius = size.minDimension / 2,
+                        centerX = size.width / 2,
+                        centerY = size.height / 2
+                    )
+                    val roundedPolygonPathWhite = roundedPolygonWhite.toPath().asComposePath()
+                    val roundedPolygonPathRed = roundedPolygonRed.toPath().asComposePath()
+
+                    onDrawBehind {
+                        drawPath(roundedPolygonPathWhite, color = Black.copy(.1f))
+                        drawPath(roundedPolygonPathRed, color = AlertRed)
+                    }
+                }
+                .fillMaxSize(),
+        )
+        Text(
+            text = "STOP",
+            modifier = Modifier,
+            color = White,
+            fontWeight = FontWeight.Black,
+            fontSize = 20.sp
+        )
+    }
+}
+
+fun RoundedPolygon.getBounds() = calculateBounds().let { Rect(it[0], it[1], it[2], it[3]) }
+class RoundedPolygonShape(
+    private val polygon: RoundedPolygon,
+    private var matrix: Matrix = Matrix()
+) : Shape {
+    private var path = Path()
+    override fun createOutline(
+        size: Size,
+        layoutDirection: LayoutDirection,
+        density: Density
+    ): Outline {
+        path.rewind()
+        path = polygon.toPath().asComposePath()
+        matrix.reset()
+        val bounds = polygon.getBounds()
+        val maxDimension = max(bounds.width, bounds.height)
+        matrix.scale(size.width / maxDimension, size.height / maxDimension)
+        matrix.translate(-bounds.left, -bounds.top)
+
+        path.transform(matrix)
+        return Outline.Generic(path)
     }
 }
 

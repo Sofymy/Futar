@@ -106,7 +106,7 @@ fun HomeBrightnessContent(
                             Modifier
                                 .border(3.dp, Purple, CircleShape)
                                 .background(Purple.copy(.4f), CircleShape)
-                                .padding(20.dp)
+                                .padding(25.dp)
                         ){
                             SliderDefaults.Thumb(
                                 modifier = Modifier,

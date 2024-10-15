@@ -14,6 +14,9 @@ sealed class Screen(){
     data object TrafficNumber: Screen()
 
     @Serializable
+    data object AutomaticTrafficNumber: Screen()
+
+    @Serializable
     data object Home: Screen()
 
     @Serializable

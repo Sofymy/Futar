@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.zenitech.futar.feature.boarding.login.LoginScreen
+import com.zenitech.futar.feature.boarding.traffic_number.AutomaticTrafficNumberScreen
 import com.zenitech.futar.feature.boarding.traffic_number.TrafficNumberScreen
 import com.zenitech.futar.feature.boarding.welcome.WelcomeScreen
 import kotlinx.coroutines.launch
@@ -52,7 +53,7 @@ fun BoardingScreen(
                         onStatusBarChange("Kérem, adja meg a forgalmi számot!")
                     }
                 }
-                2 -> TrafficNumberScreen {
+                2 -> AutomaticTrafficNumberScreen {
                     onNavigateToHome()
                 }
             }
