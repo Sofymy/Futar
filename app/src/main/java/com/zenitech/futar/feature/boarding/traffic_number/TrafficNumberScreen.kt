@@ -10,10 +10,11 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardBackspace
-import androidx.compose.material.icons.filled.KeyboardBackspace
-import androidx.compose.material.icons.filled.SubdirectoryArrowLeft
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -28,16 +29,18 @@ import androidx.compose.ui.unit.sp
 import com.zenitech.futar.ui.theme.AlertBackgroundRed
 import com.zenitech.futar.ui.theme.AlertRed
 import com.zenitech.futar.ui.theme.Purple
+import kotlinx.coroutines.Job
 
 @Preview(name = "tablet", device = "spec:shape=Normal,width=1280,height=800,unit=dp,dpi=480")
 @Composable
 fun TrafficNumberScreenPreview() {
-    TrafficNumberScreen {}
+    TrafficNumberScreen({}) {}
 }
 
 @Composable
 fun TrafficNumberScreen(
-    onNavigateToHome: () -> Unit
+    onBack: () -> Unit,
+    onNavigateToJourney: () -> Unit,
 ) {
     var trafficNumber by remember { mutableStateOf("") }
     val isTrafficNumberCorrect = remember { mutableStateOf(false) }
@@ -50,12 +53,12 @@ fun TrafficNumberScreen(
 
     LaunchedEffect(isTrafficNumberCorrect.value) {
         if (isTrafficNumberCorrect.value) {
-            onNavigateToHome()
+            onNavigateToJourney()
         }
     }
 
     Column {
-        Instruction("Forgalmi szám")
+        Instruction("Forgalmi szám", onBack = onBack)
         NumberInput(
             modifier = Modifier.weight(1f),
             number = trafficNumber,
@@ -72,19 +75,30 @@ fun checkTrafficNumber(trafficNumber: String): Boolean {
 }
 
 @Composable
-fun Instruction(text: String) {
-    Row(
+fun Instruction(
+    text: String,
+    onBack: () -> Unit = {}
+) {
+    Box(
         modifier = Modifier
             .padding(20.dp)
             .background(Color.White, RoundedCornerShape(10.dp))
             .border(1.dp, Purple.copy(0.3f), RoundedCornerShape(10.dp))
-            .padding(30.dp)
+            .padding(20.dp)
             .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
+        contentAlignment = Alignment.Center
     ) {
+        IconButton(
+            modifier = Modifier.align(Alignment.CenterStart),
+            onClick = {
+                onBack()
+            }
+        ){
+            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null, Modifier.size(25.dp))
+        }
         Text(
             text = text,
-            fontSize = 20.sp,
+            fontSize = 25.sp,
             color = Purple,
             fontWeight = FontWeight.Bold
         )
@@ -131,7 +145,9 @@ fun NumberInput(
     errorMessage: String
 ) {
     Column(
-        modifier = modifier.padding(20.dp).fillMaxSize(),
+        modifier = modifier
+            .padding(20.dp)
+            .fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -150,8 +166,13 @@ fun InputDisplay(
     maxNumber: Int,
     errorMessage: String
 ) {
-    Column(modifier = modifier.padding(end = 20.dp).clip(RoundedCornerShape(10.dp))) {
-        EnteredInput(modifier = Modifier.weight(0.25f).fillMaxWidth().padding(bottom = 16.dp), number, isNumberCorrect, maxNumber)
+    Column(modifier = modifier
+        .padding(end = 20.dp)
+        .clip(RoundedCornerShape(10.dp))) {
+        EnteredInput(modifier = Modifier
+            .weight(0.25f)
+            .fillMaxWidth()
+            .padding(bottom = 16.dp), number, isNumberCorrect, maxNumber)
         Result(modifier = Modifier.weight(0.75f, true), isError = !isNumberCorrect && number.length == maxNumber, errorMessage = errorMessage)
     }
 }
@@ -161,7 +182,7 @@ fun InputButtons(
     modifier: Modifier,
     number: String,
     onNumberChange: (String) -> Unit,
-    maxNumber: Int
+    maxNumber: Int,
 ) {
     fun handleNumberClick(newNumber: String) {
         if (number.length < maxNumber) {
@@ -248,7 +269,9 @@ fun NumberButton(
         contentAlignment = Alignment.Center
     ) {
         if (number == "Back") {
-            Icon(imageVector = Icons.AutoMirrored.Filled.KeyboardBackspace, contentDescription = null, tint = Purple, modifier = Modifier.fillMaxSize().padding(20.dp))
+            Icon(imageVector = Icons.AutoMirrored.Filled.KeyboardBackspace, contentDescription = null, tint = Purple, modifier = Modifier
+                .fillMaxSize()
+                .padding(20.dp))
         } else {
             Text(text = number, color = contentColor.value, fontSize = 40.sp, textAlign = TextAlign.Center)
         }

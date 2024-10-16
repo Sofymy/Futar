@@ -22,36 +22,40 @@ import com.zenitech.futar.ui.theme.Purple
 @Preview(name = "tablet", device = "spec:shape=Normal,width=1280,height=800,unit=dp,dpi=480")
 @Composable
 fun AutomaticTrafficNumberScreenPreview() {
-    AutomaticTrafficNumberScreen {}
+    AutomaticTrafficNumberScreen({}, {}) {}
 }
 
 @Composable
 fun AutomaticTrafficNumberScreen(
-    onNavigateToLoginScreen: () -> Unit
+    onBack: () -> Unit,
+    onNavigateToTrafficNumber: () -> Unit,
+    onNavigateToJourney: () -> Unit,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
             Modifier
-                .padding(40.dp)
                 .weight(1f)
                 .fillMaxHeight(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            Instruction("Forgalmi szám", onBack = onBack)
             Column(
                 Modifier.weight(1f),
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 DriverIdentityNumber()
+                Spacer(modifier = Modifier.height(40.dp))
+                WelcomeButton(text = "Manuális megadás", Modifier, onClick = onNavigateToTrafficNumber)
             }
 
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .align(Alignment.End), horizontalArrangement = Arrangement.SpaceBetween) {
-                WelcomeButton(text = "Manuális megadás", Modifier, onClick = onNavigateToLoginScreen)
-                WelcomeButton(text = "Tovább", Modifier, onClick = onNavigateToLoginScreen)
+                    .align(Alignment.End), horizontalArrangement = Arrangement.End) {
+                WelcomeButton(text = "Elfogadás", Modifier.padding(end = 20.dp, bottom = 20.dp), onClick = onNavigateToJourney)
             }
         }
     }

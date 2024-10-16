@@ -1,5 +1,6 @@
 package com.zenitech.futar.ui.common
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -85,8 +86,12 @@ fun HomeHeader(
             verticalAlignment = Alignment.Top
         ) {
             if(isLoggedIn){
-                if(isStopPressed) HomeStopPressed(modifier = Modifier.fillMaxHeight())
-                if(isRazziaMode) HomeHeaderHandrail(modifier = Modifier.fillMaxHeight())
+                AnimatedVisibility(visible = isStopPressed) {
+                    HomeStopPressed(modifier = Modifier.fillMaxHeight())
+                }
+                AnimatedVisibility(visible = isRazziaMode) {
+                    HomeHeaderHandrail(modifier = Modifier.fillMaxHeight())
+                }
                 HomeHeaderDelayOrHurry(modifier = Modifier.fillMaxHeight())
                 Spacer(modifier = Modifier.width(20.dp))
             }
@@ -126,8 +131,12 @@ fun HomeStopPressed(
                         centerX = size.width / 2,
                         centerY = size.height / 2
                     )
-                    val roundedPolygonPathWhite = roundedPolygonWhite.toPath().asComposePath()
-                    val roundedPolygonPathRed = roundedPolygonRed.toPath().asComposePath()
+                    val roundedPolygonPathWhite = roundedPolygonWhite
+                        .toPath()
+                        .asComposePath()
+                    val roundedPolygonPathRed = roundedPolygonRed
+                        .toPath()
+                        .asComposePath()
 
                     onDrawBehind {
                         drawPath(roundedPolygonPathWhite, color = Black.copy(.1f))

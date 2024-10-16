@@ -82,7 +82,7 @@ fun WelcomeScreen(
 @Composable
 fun WelcomeButton(
     text: String,
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }

@@ -77,11 +77,11 @@ fun HomeBrightnessContent(
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 20.dp)
+                    .padding(top = 30.dp)
             ) {
                 Text(text = "Fényerő beállítása", color = Purple, fontWeight = FontWeight.Bold, fontSize = 25.sp)
             }
-            HorizontalDivider(color = Purple.copy(0.2f), modifier = Modifier.padding(vertical = 40.dp))
+            HorizontalDivider(color = Purple.copy(0.2f), modifier = Modifier.padding(vertical = 20.dp))
 
             Box(
                 modifier = Modifier

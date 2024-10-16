@@ -43,6 +43,9 @@ fun MainScreen() {
         mutableStateOf(false)
     }
     var brightness by remember { mutableFloatStateOf(1f) }
+    val razzia = remember {
+        mutableStateOf(true)
+    }
 
     Box(){
         Column(
@@ -51,7 +54,8 @@ fun MainScreen() {
                 .fillMaxSize()
         ) {
             HomeHeader(
-                isLoggedIn = isLoggedIn.value
+                isLoggedIn = isLoggedIn.value,
+                isRazziaMode = razzia.value
             )
             Box(
                 Modifier.weight(1f)
@@ -68,6 +72,10 @@ fun MainScreen() {
                     brightness = brightness,
                     onBrightnessChange = {
                         brightness = it
+                    },
+                    razzia = razzia.value,
+                    onRazziaChange = {
+                        razzia.value = razzia.value.not()
                     }
                 )
             }
@@ -76,7 +84,9 @@ fun MainScreen() {
                 text = statusBarText.value
             )
         }
-        Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 1 - brightness)))
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 1 - brightness)))
 
     }
 }

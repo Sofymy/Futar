@@ -21,16 +21,18 @@ import com.zenitech.futar.feature.boarding.traffic_number.Instruction
 import com.zenitech.futar.feature.boarding.traffic_number.NumberInput
 import com.zenitech.futar.ui.theme.DarkTicketYellow
 import com.zenitech.futar.ui.theme.TicketYellow
+import kotlinx.coroutines.Job
 
 @Preview(name = "tablet", device = "spec:shape=Normal,width=1280,height=800,unit=dp,dpi=480")
 @Composable
 fun LoginScreenPreview() {
-    LoginScreen {}
+    LoginScreen({}) {}
 }
 
 @Composable
 fun LoginScreen(
-    onNavigateToTrafficNumberScreen: () -> Unit
+    onBack: () -> Unit,
+    onNavigateToTrafficNumberScreen: () -> Unit,
 ) {
     var identifier by remember { mutableStateOf("") }
     val isIdentifierCorrect = remember {
@@ -50,7 +52,7 @@ fun LoginScreen(
     }
 
     Column {
-        Instruction(text = "Azonosító")
+        Instruction(text = "Azonosító", onBack = onBack)
         NumberInput(
             modifier = Modifier.weight(1f),
             number = identifier,

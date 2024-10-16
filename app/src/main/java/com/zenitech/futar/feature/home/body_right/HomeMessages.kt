@@ -2,7 +2,6 @@
 
 package com.zenitech.futar.feature.home.body_right
 
-import android.content.res.Configuration
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -18,7 +17,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -84,7 +82,7 @@ enum class MessageItems { Bejövő, Kimenő }
 enum class MessagePriority { LOW, NORMAL, HIGH }
 
 @Composable
-fun HomeMessages(navigateToCreateMessage: () -> Unit) {
+fun HomeMessages(onNavigateToCreateMessage: () -> Unit) {
     val pagerState = rememberPagerState(pageCount = { 2 }, initialPage = 0)
     val selectedTabIndex = remember { derivedStateOf { pagerState.currentPage } }
     val scope = rememberCoroutineScope()
@@ -100,7 +98,7 @@ fun HomeMessages(navigateToCreateMessage: () -> Unit) {
                 1 -> HomeMessagesOutgoing()
             }
         }
-        HomeMessagesFloatingActionButton(onClick = navigateToCreateMessage)
+        HomeMessagesFloatingActionButton(onClick = onNavigateToCreateMessage)
     }
 }
 

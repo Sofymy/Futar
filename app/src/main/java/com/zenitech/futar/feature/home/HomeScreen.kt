@@ -22,10 +22,17 @@ import com.zenitech.futar.feature.home.body_left.HomeJourney
 import com.zenitech.futar.feature.home.body_right.HomeActivity
 import com.zenitech.futar.feature.home.body_right.HomeBrightness
 import com.zenitech.futar.feature.home.body_right.HomeDataSynchronization
+import com.zenitech.futar.feature.home.body_right.HomeDeviceStatus
+import com.zenitech.futar.feature.home.body_right.HomeDisplay
+import com.zenitech.futar.feature.home.body_right.HomeFuel
 import com.zenitech.futar.feature.home.body_right.HomeMessages
 import com.zenitech.futar.feature.home.body_right.HomeMessagesNew
+import com.zenitech.futar.feature.home.body_right.HomeNewTrafficNumber
+import com.zenitech.futar.feature.home.body_right.HomeOtherRoutes
+import com.zenitech.futar.feature.home.body_right.HomeRoutesOfJourney
 import com.zenitech.futar.feature.home.body_right.HomeSettings
 import com.zenitech.futar.feature.home.body_right.HomeStoredSounds
+import com.zenitech.futar.feature.home.body_right.HomeVehicleStatus
 import com.zenitech.futar.ui.HomePrimaryOutlinedButton
 import com.zenitech.futar.ui.theme.FutarTheme
 import com.zenitech.futar.ui.theme.Purple
@@ -36,36 +43,46 @@ import com.zenitech.futar.ui.theme.Purple
 fun HomeScreenPreview(){
     FutarTheme {
         HomeScreen(
-            isRazziaMode = true,
             onBrightnessChange = {  },
-            brightness = 1f
+            brightness = 1f,
+            razzia = true,
+            onRazziaChange = { },
+            onLogout = { }
         )
     }
 }
 
 @Composable
 fun HomeScreen(
-    isRazziaMode: Boolean = true,
     onBrightnessChange: (Float) -> Unit,
-    brightness: Float
+    brightness: Float,
+    razzia: Boolean,
+    onRazziaChange: () -> Unit,
+    onLogout: () -> Unit
 ){
     HomeContent(
-        isRazziaMode = isRazziaMode,
         onBrightnessChange = onBrightnessChange,
-        brightness = brightness
+        brightness = brightness,
+        onRazziaChange = onRazziaChange,
+        razzia = razzia,
+        onLogout = onLogout
     )
 }
 
 @Composable
 fun HomeContent(
-    isRazziaMode: Boolean = true,
     onBrightnessChange: (Float) -> Unit,
-    brightness: Float
+    brightness: Float,
+    razzia: Boolean,
+    onRazziaChange: () -> Unit,
+    onLogout: () -> Unit
 ) {
 
     val selectedButton = remember {
-        mutableStateOf(HomeButton.UZENETEK)
+        mutableStateOf(HomeButton.TEVEKENYSEG)
     }
+
+
 
     HomeBody(
         selectedButton = selectedButton.value,
@@ -73,7 +90,10 @@ fun HomeContent(
             selectedButton.value = it
         },
         onBrightnessChange = onBrightnessChange,
-        brightness = brightness
+        brightness = brightness,
+        onRazziaChange = onRazziaChange,
+        razzia = razzia,
+        onLogout = onLogout
     )
 }
 
@@ -83,13 +103,18 @@ enum class HomeButton(val text: String, val isMainButton: Boolean = false) {
     TAROLT_HANGOK("Tárolt hangok", true),
     UZENETEK("Üzenetek", true),
     BEALLITASOK("Beállítások", true),
-    UZENET_KULDESE("Üzenetek", false),
+    UZENET_KULDESE("Üzenetek"),
     ADAT_SZINKRONIZACIO("Beállítások"),
     FENYERO("Beállítások"),
     JARMU_ALLAPOT("Beállítások"),
     ESZKOZ_ALLAPOT("Beállítások"),
     RAZZIA("Beállítások"),
     KIJELZOK("Beállítások"),
+    NAVIGACIO("Tevékenység"),
+    VISZONYLAT_UTVONALAI("Tevékenység"),
+    EGYEB_UTVONALAK("Tevékenység"),
+    UZEMANYAG("Tevékenység"),
+    FORGALMI_SZAM("Tevékenység"),
 }
 
 
@@ -98,7 +123,10 @@ fun HomeBody(
     selectedButton: HomeButton,
     onSelectedButtonChanged: (HomeButton) -> Unit,
     brightness: Float,
-    onBrightnessChange: (Float) -> Unit
+    onBrightnessChange: (Float) -> Unit,
+    razzia: Boolean,
+    onRazziaChange: () -> Unit,
+    onLogout: () -> Unit
 ) {
     Box(
         Modifier
@@ -124,11 +152,38 @@ fun HomeBody(
                     onNavigateToDataSynchronization = {
                         onSelectedButtonChanged(HomeButton.ADAT_SZINKRONIZACIO)
                     },
+                    onNavigateToVehicleStatus = {
+                        onSelectedButtonChanged(HomeButton.JARMU_ALLAPOT)
+                    },
+                    onNavigateToDeviceStatus = {
+                        onSelectedButtonChanged(HomeButton.ESZKOZ_ALLAPOT)
+                    },
                     onNavigateToBrightness = {
                         onSelectedButtonChanged(HomeButton.FENYERO)
                     },
+                    onNavigateToDisplay = {
+                        onSelectedButtonChanged(HomeButton.KIJELZOK)
+                    },
+                    onClickRoutesOfJourney = {
+                        onSelectedButtonChanged(HomeButton.VISZONYLAT_UTVONALAI)
+                    },
+                    onClickNewTrafficNumber = {
+                        onSelectedButtonChanged(HomeButton.FORGALMI_SZAM)
+                    },
+                    onEnterClick = {
+                        onSelectedButtonChanged(HomeButton.TEVEKENYSEG)
+                    },
+                    onClickFuel = {
+                        onSelectedButtonChanged(HomeButton.UZEMANYAG)
+                    },
+                    onClickOtherRoutes = {
+                        onSelectedButtonChanged(HomeButton.EGYEB_UTVONALAK)
+                    },
                     onBrightnessChange = onBrightnessChange,
-                    brightness = brightness
+                    brightness = brightness,
+                    onRazziaChange = onRazziaChange,
+                    razzia = razzia,
+                    onLogout = onLogout
                 )
             }
         }
@@ -157,8 +212,19 @@ fun HomeSelectedButtonContent(
     onNavigateToCreateMessage: () -> Unit,
     onNavigateToDataSynchronization: () -> Unit,
     onNavigateToBrightness: () -> Unit,
+    onNavigateToVehicleStatus: () -> Unit,
+    onNavigateToDeviceStatus: () -> Unit,
+    onNavigateToDisplay: () -> Unit,
+    onClickRoutesOfJourney: () -> Unit,
+    onClickNewTrafficNumber: () -> Unit,
+    onClickFuel: () -> Unit,
+    onClickOtherRoutes: () -> Unit,
+    onEnterClick: () -> Unit,
     onBrightnessChange: (Float) -> Unit,
-    brightness: Float
+    brightness: Float,
+    onRazziaChange: () -> Unit,
+    razzia: Boolean,
+    onLogout: () -> Unit
 ) {
     Column {
         Column(
@@ -172,11 +238,17 @@ fun HomeSelectedButtonContent(
         ) {
             when(selectedButton){
                 HomeButton.TEVEKENYSEG -> {
-                    HomeActivity()
+                    HomeActivity(
+                        onLogout = onLogout,
+                        onClickRoutesOfJourney = onClickRoutesOfJourney,
+                        onClickNewTrafficNumber = onClickNewTrafficNumber,
+                        onClickFuel = onClickFuel,
+                        onClickOtherRoutes = onClickOtherRoutes
+                    )
                 }
                 HomeButton.UZENETEK -> {
                     HomeMessages(
-                        navigateToCreateMessage = onNavigateToCreateMessage
+                        onNavigateToCreateMessage = onNavigateToCreateMessage
                     )
                 }
                 HomeButton.TAROLT_HANGOK -> {
@@ -185,7 +257,12 @@ fun HomeSelectedButtonContent(
                 HomeButton.BEALLITASOK -> {
                     HomeSettings(
                         onNavigateToDataSynchronization = onNavigateToDataSynchronization,
-                        onNavigateToBrightness = onNavigateToBrightness
+                        onNavigateToBrightness = onNavigateToBrightness,
+                        onNavigateToDeviceStatus = onNavigateToDeviceStatus,
+                        onNavigateToVehicleStatus = onNavigateToVehicleStatus,
+                        onNavigateToHomeDisplay = onNavigateToDisplay,
+                        razzia = razzia,
+                        onRazziaChanged = onRazziaChange
                     )
                 }
 
@@ -203,16 +280,34 @@ fun HomeSelectedButtonContent(
                     )
                 }
                 HomeButton.JARMU_ALLAPOT -> {
-
+                    HomeVehicleStatus()
                 }
                 HomeButton.ESZKOZ_ALLAPOT -> {
-
+                    HomeDeviceStatus()
                 }
                 HomeButton.RAZZIA -> {
 
                 }
                 HomeButton.KIJELZOK -> {
+                    HomeDisplay()
+                }
 
+                HomeButton.NAVIGACIO -> {
+
+                }
+                HomeButton.VISZONYLAT_UTVONALAI -> {
+                    HomeRoutesOfJourney()
+                }
+                HomeButton.EGYEB_UTVONALAK -> {
+                    HomeOtherRoutes()
+                }
+                HomeButton.UZEMANYAG -> {
+                    HomeFuel()
+                }
+                HomeButton.FORGALMI_SZAM -> {
+                    HomeNewTrafficNumber(
+                        onEnterClick = onEnterClick
+                    )
                 }
             }
         }
